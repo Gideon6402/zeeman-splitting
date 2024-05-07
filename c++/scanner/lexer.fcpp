@@ -2,14 +2,27 @@
 
 //%interactive
 //%debug
-//%print-tokens
+%print-tokens
+
+float                [0-9]+(.[0-9]+)?
+
+%x miniscanner
+%x acquire_column
 
 %%
 
-VECTEUR                         \[vecteur\]
-VARIABLE_ASSINGMENT             [^ \t]* = [^ \t]*
-NOM_ASSIGNMENT  
+.|\n                  // ignore everything
 
+\[vecteur\]           begin(StartCondition_::miniscanner);
 
-.|\n                            // skip everything
+<miniscanner> {
+    "nom = "\".*\"    return Tokens::NOM_ASSIGNMENT;
+    "{"               begin(StartCondition_::acquire_column);
+    .                 // ignore everything
+}
+
+<acquire_column> {
+    [0-9]+(.[0-9]+)?  return Tokens::NUMBER;
+    \}                begin(StartCondition_::INITIAL);
+}
 

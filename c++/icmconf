@@ -124,7 +124,7 @@
 #define PARSFLAGS           "-V"
 
     // What is the top-level (or only) grammar specification file?
-#define PARSSPEC            "grammar"
+#define PARSSPEC            "grammar.bcpp"
 
     // Optionally use patterns to specify additional grammar specification 
     // files. These files are (in)directly included by the file specified by
@@ -150,7 +150,7 @@
 #define SCANFLAGS           ""
 
     // Name of the lexical scanner specification file
-#define SCANSPEC            "lexer"
+#define SCANSPEC            "lexer.fcpp"
     
     // Optionally use patterns to specify additional scanner specification 
     // files. These files are (in)directly included by the file specified by
