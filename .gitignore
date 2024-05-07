@@ -1,0 +1,77 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+### Above combination will ignore all files without extension ###
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Dependencies
+*.dep
+
+# VSCode
+*.vscode/*
+
+# Don't ignore makefiles (turned off now)
+!Makefile
+
+# Don't ignore lexers and grammars
+!lexer
+!grammar
+
+# Do ignore zips
+*.zip
+
+# Scripts
+!utils/bash/*
+!utils/python/executables/*
+
+# Python
+__pycache__/
+*.pyc
+
+# flexc++
+scannerbase.h
+lex.cc
+
+# bisonc++
+parserbase.h
+parse.cc
+grammar.bcpp.output
+
