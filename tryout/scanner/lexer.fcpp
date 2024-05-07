@@ -2,10 +2,29 @@
 
 //%interactive
 //%debug
-//%print-tokens
+%print-tokens
+
+%x miniscanner
+%x acquire_column
+
+float                [0-9]+(.[0-9]+)?
 
 %%
 
-[ \t]+                          // Often used: skip white space
-\n                              // same
+\[vecteur\]          begin(StartCondition_::miniscanner);
 
+
+<miniscanner> {
+    "nom = "\".*\"   print_column_name();
+    "{"              begin(StartCondition_::acquire_column);
+    .|\n             // ignore everything
+}
+
+<acquire_column> {
+    {float}          out() << matched() << '\n';
+    "}"              begin(StartCondition_::INITIAL);
+    .|\n             // ignore everything
+}
+
+
+.|\n                 // ignore everything
