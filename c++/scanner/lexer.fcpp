@@ -1,0 +1,15 @@
+%filenames scanner
+
+//%interactive
+//%debug
+//%print-tokens
+
+%%
+
+JUNK_BRACKET                    \[.*\]
+VECTEUR                         \[vecteur\]
+VARIABLE_ASSINGMENT             [^ \t]* = [^ \t]*
+NOM_ASSIGNMENT                  
+[ \t]+                          // Often used: skip white space
+\n                              // same
+
