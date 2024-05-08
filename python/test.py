@@ -2,5 +2,8 @@
 
 import matplotlib.pyplot as plt
 
-plt.plot([1, 3, 4])
-plt.show()
+for measurementNumber in [1, 2, 3, 5, 6, 9, 11]:
+    with open("../processed-data/" + str(measurementNumber) + ".txt", "r") as file:
+        for line in file:
+            if "END OF VALUES" in line:
+                column = 

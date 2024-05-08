@@ -15,17 +15,16 @@ def main():
             columnName = file.readline()
             values = np.zeros(4096)
             valueIndex = 0
-            for line in file:
+            for index, line in enumerate(file):
                 if "END OF VALUES" in line:
                     break
-                values[valueIndex] = float(line[:-1]) # debug maybe we can remove this one
-                valueIndex += 1
+                values[index] = float(line[:-1]) # debug maybe we can remove this one
             frame = fig.add_subplot(7, 1, measurementIndex)
             frame.plot(values)
         measurementIndex += 1
     
 
-    show(block=False)
+    show()
 
 
 if __name__ == "__main__":
