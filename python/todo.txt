@@ -1,0 +1,5 @@
+Plot all diagram in a nice matplotlib frame
+Acces more then the first measurement
+Comment the c++ code
+comment the python code
+explore data structure: print all names

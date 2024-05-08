@@ -7,11 +7,11 @@
 %x miniscanner
 %x acquire_column
 
-float                [0-9]+(.[0-9]+)?
+float                   [0-9]+(.[0-9]+)?
 
 %%
 
-\[vecteur\]         begin(StartCondition_::miniscanner);
+\[vecteur\]             begin(StartCondition_::miniscanner);
 
 
 <miniscanner>
@@ -23,13 +23,13 @@ float                [0-9]+(.[0-9]+)?
 
 <acquire_column>
 {
-    {float}             out() << matched() << ' ';
+    {float}             out() << matched() << '\n';
     "}"                 {
-                             out() << '\n';
-                             begin(StartCondition_::INITIAL);
+                            out() << "END OF VALUES" << '\n';
+                            begin(StartCondition_::INITIAL);
                         }
     .|\n                // ignore everything else
 }
 
 
-.|\n                 // ignore everything else
+.|\n                    // ignore everything else

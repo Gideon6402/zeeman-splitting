@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 
 
     Scanner scanner;
-    vector<int> fileNumbers{1};
+    vector<int> fileNumbers{1, 2, 3, 5, 6, 9, 11};
     for (int number: fileNumbers)
     {
         string strNumber = to_string(number);
@@ -20,5 +20,6 @@ int main(int argc, char **argv)
         scanner.switchStreams(inFile, outFile);
         while (scanner.lex())
             ;
+        outFile << "END OF FILE" << '\n';
     }
 }
