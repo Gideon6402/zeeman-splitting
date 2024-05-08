@@ -1,7 +1,7 @@
+#include "scanner/scanner.h"
 #include <iostream>
 #include <string>
-#include "scanner/scanner.h"
+#include <vector>
 #include <fstream>
-
 
 using namespace std;

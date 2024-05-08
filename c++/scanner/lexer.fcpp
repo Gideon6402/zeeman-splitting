@@ -4,25 +4,32 @@
 //%debug
 %print-tokens
 
-float                [0-9]+(.[0-9]+)?
-
 %x miniscanner
 %x acquire_column
 
+float                [0-9]+(.[0-9]+)?
+
 %%
 
-.|\n                  // ignore everything
+\[vecteur\]         begin(StartCondition_::miniscanner);
 
-\[vecteur\]           begin(StartCondition_::miniscanner);
 
-<miniscanner> {
-    "nom = "\".*\"    return Tokens::NOM_ASSIGNMENT;
-    "{"               begin(StartCondition_::acquire_column);
-    .                 // ignore everything
+<miniscanner>
+{
+    "nom = "\".*\"      print_column_name();
+    "{"                 begin(StartCondition_::acquire_column);
+    .|\n                // ignore everything else
 }
 
-<acquire_column> {
-    [0-9]+(.[0-9]+)?  return Tokens::NUMBER;
-    \}                begin(StartCondition_::INITIAL);
+<acquire_column>
+{
+    {float}             out() << matched() << ' ';
+    "}"                 {
+                             out() << '\n';
+                             begin(StartCondition_::INITIAL);
+                        }
+    .|\n                // ignore everything else
 }
 
+
+.|\n                 // ignore everything else

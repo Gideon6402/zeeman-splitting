@@ -1,15 +1,4 @@
-#ifndef INCLUDED_TOKENS_
-#define INCLUDED_TOKENS_
-
-struct Tokens
-{
-    // Symbolic tokens:
-    enum Tokens_
-    {
-        NOM_ASSIGNMENT = 257,
-        NUMBER,
-    };
-
+enum Tokens {
+    VECTEUR = 256,
+    COLUMN_ASSIGNMENT,
 };
-
-#endif
