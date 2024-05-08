@@ -11,20 +11,25 @@ float                [0-9]+(.[0-9]+)?
 
 %%
 
-\[vecteur\]          begin(StartCondition_::miniscanner);
+\[vecteur\]         begin(StartCondition_::miniscanner);
 
 
-<miniscanner> {
-    "nom = "\".*\"   print_column_name();
-    "{"              begin(StartCondition_::acquire_column);
-    .|\n             // ignore everything
+<miniscanner>
+{
+    "nom = "\".*\"      print_column_name();
+    "{"                 begin(StartCondition_::acquire_column);
+    .|\n                // ignore everything else
 }
 
-<acquire_column> {
-    {float}          out() << matched() << '\n';
-    "}"              begin(StartCondition_::INITIAL);
-    .|\n             // ignore everything
+<acquire_column>
+{
+    {float}             out() << matched() << ' ';
+    "}"                 {
+                             out() << '\n';
+                             begin(StartCondition_::INITIAL);
+                        }
+    .|\n                // ignore everything else
 }
 
 
-.|\n                 // ignore everything
+.|\n                 // ignore everything else
