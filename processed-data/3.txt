@@ -4095,7 +4095,6 @@ onlySodiumLamp-1_E
 0
 0
 0
-END OF VALUES
 onlySodiumLamp-2_E
 7.59155
 118.807
@@ -8193,7 +8192,6 @@ onlySodiumLamp-2_E
 0
 0
 0
-END OF VALUES
 onlySodiumLamp-3_E
 2.37631
 54.1458
@@ -12291,7 +12289,6 @@ onlySodiumLamp-3_E
 0
 0
 0
-END OF VALUES
 onlySodiumLamp-4_E
 1.36206
 178.732
@@ -16389,7 +16386,6 @@ onlySodiumLamp-4_E
 0
 0
 0
-END OF VALUES
 onlySodiumLamp-5_E
 0
 0
@@ -20487,7 +20483,6 @@ onlySodiumLamp-5_E
 0
 0
 0
-END OF VALUES
 onlySodiumLamp-6_E
 0
 116.25
@@ -24585,7 +24580,6 @@ onlySodiumLamp-6_E
 0
 0
 0
-END OF VALUES
 onlySodiumLamp-7_E
 3.65057
 0
@@ -28683,7 +28677,6 @@ onlySodiumLamp-7_E
 0
 0
 0
-END OF VALUES
 onlySodiumLamp-8_E
 0
 245.3
@@ -32781,7 +32774,6 @@ onlySodiumLamp-8_E
 0
 0
 0
-END OF VALUES
 onlySodiumLamp-9_E
 10.0352
 24.5331
@@ -36879,7 +36871,6 @@ onlySodiumLamp-9_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-10_E
 0
 75.4125
@@ -40977,7 +40968,6 @@ onlySodiumLampWithMagneticField-10_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-1_E
 17.3779
 78.7661
@@ -45075,7 +45065,6 @@ onlySodiumLampWithMagneticField-1_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-2_E
 23.7467
 119.209
@@ -49173,7 +49162,6 @@ onlySodiumLampWithMagneticField-2_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-3_E
 0
 0
@@ -53271,7 +53259,6 @@ onlySodiumLampWithMagneticField-3_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-4_E
 0
 0
@@ -57369,7 +57356,6 @@ onlySodiumLampWithMagneticField-4_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-5_E
 6.29322
 32.7005
@@ -61467,7 +61453,6 @@ onlySodiumLampWithMagneticField-5_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-6_E
 20.7434
 0
@@ -65565,7 +65550,6 @@ onlySodiumLampWithMagneticField-6_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-7_E
 0
 0
@@ -69663,7 +69647,6 @@ onlySodiumLampWithMagneticField-7_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-8_E
 17.1832
 0
@@ -73761,7 +73744,6 @@ onlySodiumLampWithMagneticField-8_E
 0
 0
 0
-END OF VALUES
 onlySodiumLampWithMagneticField-9_E
 0
 247.956
@@ -77859,7 +77841,6 @@ onlySodiumLampWithMagneticField-9_E
 0
 0
 0
-END OF VALUES
 Raw_E
 0
 219.481
@@ -81957,7 +81938,6 @@ Raw_E
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -86055,7 +86035,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -90153,7 +90132,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -94251,7 +94229,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -98349,7 +98326,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -102447,7 +102423,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -106545,7 +106520,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -110643,7 +110617,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -114741,7 +114714,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -118839,7 +118811,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -122937,7 +122908,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -127035,7 +127005,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -131133,7 +131102,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -135231,7 +135199,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -139329,7 +139296,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -143427,7 +143393,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -147525,7 +147490,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -151623,7 +151587,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -155721,7 +155684,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -159819,7 +159781,6 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
 λ
 360.127
 360.299
@@ -163917,5 +163878,3 @@ END OF VALUES
 0
 0
 0
-END OF VALUES
-END OF FILE
