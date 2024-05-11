@@ -72,19 +72,23 @@ def acquire_data():
 #                                  last key contains numpy array of the wavelengths
 # lineNr: nth entry of the spectrum   
 
-
+def get_spectra(data, setupName):
+    print(f"Processing {setupName}...")
+    plt.title(f"{setupName}")
+    for columnName in data[setupName]:
+        if ("λ" not in columnName):
+            plt.plot(data[setupName]["λ\n"],
+                     data[setupName][columnName],
+                     label=columnName)
+    plt.legend()
+    plt.savefig("../plots/" + setupName[0] + "/all-spectra.png")
+    
 
 def get_plots(data):
     for setupName in data:
-        print(f"Processing {setupName}...")
-        plt.title(f"{setupName}")
-        for columnName in data[setupName]:
-            if ("λ" not in columnName):
-                plt.plot(data[setupName]["λ\n"],
-                            data[setupName][columnName],
-                            label=columnName)
-        plt.legend()
-        plt.savefig("../plots/" + setupName[0] + "/all-spectra.png")
+        get_spectra(data, setupName)
+        
+
         
 def get_plots_from_one_setup(data, setupName):
     for columnName in data[setupName]:
