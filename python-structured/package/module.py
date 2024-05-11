@@ -1,4 +1,23 @@
+# from .private import _process_file
 import numpy as np
+
+
+def _process_file(data, file, setupName):
+    while (True):                            # iterate over the columns
+        columnName = file.readline()      
+        if (columnName == ("" or "λ")):               # check end of file
+            break 
+                                             # add new column to data
+        data[setupName][columnName] = np.zeros(4096)  
+        for lineNr in range(4096):           # iterate over values
+            line = file.readline()        
+            try:                             # try to convert into float
+                value = float(line)
+            except:                       
+                print(f"could not convert line: '{line[:-1]}' into float")
+                break
+                                             # add value to data
+            data[setupName][columnName][lineNr] = value
 
 def acquire_data():
     """
@@ -27,29 +46,28 @@ def acquire_data():
         - The function currently does not handle cases where files or expected data formats are missing or incorrect.
         - Debug statements (print) are included and may be removed or commented out in production use.
     """
-    data = {}
-    # for setupNr in [1, 2, 3, 5, 6, 9, 11]:  # number of data files
-    for setupNr in [1]:  # number of data files
-        setupName = str(setupNr) + ".txt"
-        data[setupName] = {}
+    data = {}                             
+    # for fileNr in [1, 2, 3, 5, 6, 9, 11]: 
+    for fileNr in [11]:   
+        setupName = str(fileNr) + ".txt"
+        data[setupName] = {}                 # add set-up dict to data
         with open("../processed-data/" + setupName) as file:
-            endOfFile = False
-            while (not endOfFile):
-                columnName = file.readline()
-                if (columnName == ""):  # readline() returns empy string at the end of file
-                    endOfFile = True
-                print(columnName) # debug
-                data[setupName][columnName] = np.zeros(4096)
-                for lineNr in range(4096):
-                    line = file.readline()
-                    try:
-                        value = float(line)
-                    except:
-                        print(f"{line} cannot be converted to a float")
-                        break
-                    data[setupName][columnName][lineNr] = value
-                junk = file.readline()  # we don't need this line
+            _process_file(data, file, setupName)
+    
+    return data
+            
                 
 # debug: don't forget to update the docstring
+
+# structure:
+# data[setupName][columnName][lineNr]
+
+# where:
+# data: one variable to contain all the data of the experiment
+# data[setupName]: dictionary with:
+#                  - keys:     name of spectrum (like background_1)
+#                  - values:   numpy array of the spectrum
+#                                  last key contains numpy array of the wavelengths
+# lineNr: nth entry of the spectrum                    
                 
             
