@@ -20,6 +20,5 @@ int main(int argc, char **argv)
         scanner.switchStreams(inFile, outFile);
         while (scanner.lex())
             ;
-        outFile << "END OF FILE" << '\n';
     }
 }
