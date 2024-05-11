@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 def _process_file(data, file, setupName):
-    line = file.readline()                   # first column name                
+    line = file.readline()                   # first columnname                
     while (True):                            # iterate over the columns
         columnName = line                  
         if (columnName == ""):               # check end of file (debug lamda)
@@ -20,6 +20,8 @@ def _process_file(data, file, setupName):
             except:                   
                 break                        # line is non numeric => line is column name
             data[setupName][columnName][lineNr] = value   # add value to data
+            
+# process could fastened by deleting variable columnName
 
 def acquire_data():
     """
@@ -86,4 +88,4 @@ def plot(data):
         plt.legend()
         plt.savefig("../plots/" + setupName + ".png")
         
-                          
+                  
