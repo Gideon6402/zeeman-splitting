@@ -3,13 +3,6 @@
 
 int main(int argc, char **argv)
 {
-    // ifstream inFile{ "../ubuntu_data/1.txt" };
-    // ofstream outFile{ "output.txt" };
-    // Scanner scanner(inFile, outFile);
-    // while (scanner.lex())
-    //     ;
-
-
     Scanner scanner;
     vector<int> fileNumbers{1, 2, 3, 5, 6, 9, 11};
     for (int number: fileNumbers)

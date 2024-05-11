@@ -5,6 +5,8 @@ from package import *
 def main():
     data = acquire_data()
     
+    plot(data)
+    
     
         
 

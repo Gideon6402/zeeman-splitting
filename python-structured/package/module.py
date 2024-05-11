@@ -1,23 +1,25 @@
 # from .private import _process_file
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def _process_file(data, file, setupName):
+    line = file.readline()                   # first column name                
     while (True):                            # iterate over the columns
-        columnName = file.readline()      
-        if (columnName == ("" or "λ")):               # check end of file
+        columnName = line                  
+        if (columnName == ""):               # check end of file (debug lamda)
             break 
                                              # add new column to data
-        data[setupName][columnName] = np.zeros(4096)  
-        for lineNr in range(4096):           # iterate over values
-            line = file.readline()        
+        data[setupName][columnName] = np.zeros(10_000)
+        lineNr = 0
+        while (True):                        # iterate till new column name is found
+            line = file.readline()    
             try:                             # try to convert into float
                 value = float(line)
-            except:                       
-                print(f"could not convert line: '{line[:-1]}' into float")
-                break
-                                             # add value to data
-            data[setupName][columnName][lineNr] = value
+                lineNr += 1
+            except:                   
+                break                        # line is non numeric => line is column name
+            data[setupName][columnName][lineNr] = value   # add value to data
 
 def acquire_data():
     """
@@ -47,8 +49,7 @@ def acquire_data():
         - Debug statements (print) are included and may be removed or commented out in production use.
     """
     data = {}                             
-    # for fileNr in [1, 2, 3, 5, 6, 9, 11]: 
-    for fileNr in [11]:   
+    for fileNr in [1, 2, 3, 5, 6, 9, 11]: 
         setupName = str(fileNr) + ".txt"
         data[setupName] = {}                 # add set-up dict to data
         with open("../processed-data/" + setupName) as file:
@@ -59,7 +60,7 @@ def acquire_data():
                 
 # debug: don't forget to update the docstring
 
-# structure:
+### structure:
 # data[setupName][columnName][lineNr]
 
 # where:
@@ -69,5 +70,17 @@ def acquire_data():
 #                  - values:   numpy array of the spectrum
 #                                  last key contains numpy array of the wavelengths
 # lineNr: nth entry of the spectrum                    
+
+
+formatString = "{:10}{:40}"
+
+def plot(data):
+    print(formatString.format("set-up", "column name"))
+    for setupName in data:
+        for columnName in data[setupName]:
+            # plt.title(f"{setupName}: {columnName}")
+            # plt.plot(data[setupName][columnName])
+            print("hello")
+            
                 
             
