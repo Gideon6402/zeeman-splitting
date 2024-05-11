@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def _process_file(data, file, setupName):
     line = file.readline()                   # first columnname                
     while (True):                            # iterate over the columns
@@ -71,14 +70,13 @@ def acquire_data():
 #                  - keys:     name of spectrum (like background_1)
 #                  - values:   numpy array of the spectrum
 #                                  last key contains numpy array of the wavelengths
-# lineNr: nth entry of the spectrum                    
+# lineNr: nth entry of the spectrum   
 
 
-formatString = "{:10}{:40}"
 
-def plot(data):
-    print(formatString.format("set-up", "column name"))
+def get_plots(data):
     for setupName in data:
+        print(f"Processing {setupName}...")
         plt.title(f"{setupName}")
         for columnName in data[setupName]:
             if ("λ" not in columnName):
@@ -86,6 +84,26 @@ def plot(data):
                             data[setupName][columnName],
                             label=columnName)
         plt.legend()
-        plt.savefig("../plots/" + setupName + ".png")
+        plt.savefig("../plots/" + setupName[0] + "/all-spectra.png")
+        
+def get_plots_from_one_setup(data, setupName):
+    for columnName in data[setupName]:
+        print(f"processing {columnName}")
+        plt.plot(data[setupName]["λ\n"],
+                 data[setupName][columnName])
+        plt.ylim(0, 8_000)
+        plt.title(columnName)
+        plt.savefig(f"../plots/{setupName[0]}/{columnName}.png") 
+        plt.clf()
+        
+def get_intensity_plot(data, setupName):
+    intensities = []
+    for columnName in data[setupName]:
+        if (columnName != "λ\n"):
+            intensity = data[setupName][columnName].sum()
+            intensities.append(intensity)
+    plt.plot(intensities)
+    plt.savefig(f"../plots/{setupName[0]}/intensity-vs-time.png")
+        
         
                   

@@ -6,3 +6,4 @@ explore data structure: print all names
 instead of checking END OF VALUES use fact that we have 4096 numbers
 trim last zeros from spectra arrays
 substract background
+do not import private functions
