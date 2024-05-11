@@ -77,10 +77,13 @@ formatString = "{:10}{:40}"
 def plot(data):
     print(formatString.format("set-up", "column name"))
     for setupName in data:
+        plt.title(f"{setupName}")
         for columnName in data[setupName]:
-            # plt.title(f"{setupName}: {columnName}")
-            # plt.plot(data[setupName][columnName])
-            print("hello")
-            
-                
-            
+            if ("λ" not in columnName):
+                plt.plot(data[setupName]["λ\n"],
+                            data[setupName][columnName],
+                            label=columnName)
+        plt.legend()
+        plt.savefig("../plots/" + setupName + ".png")
+        
+                          
