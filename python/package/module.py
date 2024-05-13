@@ -83,10 +83,21 @@ def get_spectra(data, setupName):
     plt.legend()
     plt.savefig("../plots/" + setupName[0] + "/all-spectra.png")
     
+def get_intensity(data, setupName):
+    intensities = []
+    for columnName in data[setupName]:
+        if (columnName != "λ\n"):
+            intensity = data[setupName][columnName].sum()
+            intensities.append(intensity)
+    plt.plot(intensities)
+    plt.savefig(f"../plots/{setupName[0]}/intensity-vs-time.png")
 
+    
+    
 def get_plots(data):
     for setupName in data:
         get_spectra(data, setupName)
+        get_intensity(data, setupName)
         
 
         
@@ -100,14 +111,7 @@ def get_plots_from_one_setup(data, setupName):
         plt.savefig(f"../plots/{setupName[0]}/{columnName}.png") 
         plt.clf()
         
-def get_intensity_plot(data, setupName):
-    intensities = []
-    for columnName in data[setupName]:
-        if (columnName != "λ\n"):
-            intensity = data[setupName][columnName].sum()
-            intensities.append(intensity)
-    plt.plot(intensities)
-    plt.savefig(f"../plots/{setupName[0]}/intensity-vs-time.png")
+
         
         
                   
