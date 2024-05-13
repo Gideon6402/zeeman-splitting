@@ -1,16 +1,17 @@
 # from .private import _process_file
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 
+# columnames end with a '\n' so it will be cut every now and again with [:-1]
 
-debug_list = [1]
+PROGRES = 1
+IGNORE = 2
+debug_list = [IGNORE]
 
 def print_dbg(identifier, *args, **kwargs):
     if identifier in debug_list:
         print(*args, **kwargs)
-        
-        
 
 def _process_file(data, file, setupName):
     line = file.readline()                   # first columnname                
@@ -32,12 +33,7 @@ def _process_file(data, file, setupName):
             
 # process could fastened by deleting variable columnName
 
-# def separate_duplos(data):
-#     newData = {}
-#     for setupNumber in data:
-#         newData[setupNumber]
-#         for columnName in list(data[setupNumber]):
-
+            
 def acquire_data():
     """
     Reads data from a series of text files named by number ("1.txt", "2.txt", etc.) in the "../processed-data/" directory.
@@ -90,6 +86,46 @@ def acquire_data():
 #                                  last key contains numpy array of the wavelengths
 # lineNr: nth entry of the spectrum   
 
+from .module import *
+
+def create_duploName_dictionaries(data, newData, setupNumber):
+    newData[setupNumber] = {}
+    for columnName in data[setupNumber]:
+        if ("background" in columnName):
+            separator = "_"
+        else:
+            separator = "-"
+        duploName = columnName.split(separator)[0]
+        newData[setupNumber][duploName] = {}
+        
+def fill_duploName_dictionaries(data, newData, setupNumber):
+    for columnName in list(data[setupNumber]):
+        try:
+            if ("background" in columnName):
+                ## splitting up e.g. background_1_E
+                duploName, duploNumber, _ = columnName.split("_") 
+                duploNumber = float(duploNumber)
+                newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
+            else:
+                ## splitting up e.g. fireOnly-10_E
+                duploName, duploNumber = columnName.split("-")
+                duploNumber = float(duploNumber.split("_")[0]) # remove the _E at the end of the column name
+                newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
+        except Exception as e:
+            # print(e)
+            print_dbg(IGNORE, f"Ignoring {columnName[:-1]}")
+            continue
+
+def separate_duplos(data):
+    newData = {}
+    for setupNumber in data:
+        create_duploName_dictionaries(data, newData, setupNumber)
+        fill_duploName_dictionaries(data, newData, setupNumber)
+
+    return newData
+
+
+
 def mkdir(filename):
     if not os.path.isdir(filename):
         os.system(f"mkdir {filename}")
@@ -107,7 +143,7 @@ def get_spectra_plot(data, setupName):
     plt.clf() # clear figure
     
 def get_spectra_plots(data, setupName):
-    print_dbg(1, f"getting all spectra plots for {setupName}...")
+    print_dbg(PROGRES, f"getting all spectra plots for {setupName}...")
     for columnName in data[setupName]:
         if (columnName != "λ\n" and columnName != "Raw_E\n"):
             plt.plot(data[setupName]["λ\n"],
@@ -118,7 +154,7 @@ def get_spectra_plots(data, setupName):
             plt.clf()
     
 def get_intensity(data, setupName):
-    print_dbg(1, f"gettting intensities      for {setupName}")
+    print_dbg(PROGRES, f"gettting intensities      for {setupName}")
     intensities = []
     for columnName in data[setupName]:
         if (columnName != "λ\n" and columnName != "Raw_E\n"):
@@ -132,11 +168,14 @@ def get_plots(data):
     mkdir(f"../plots/intensities")
     mkdir(f"../plots/all-spectra")
     for setupName in data:
-        # setupNumber = setupName.split(".")[0]
-        # mkdir(f"../plots/{setupNumber}")
-        # get_spectra_plot(data, setupName)
-        # get_spectra_plots(data, setupName)
-        # get_intensity(data, setupName)
+        setupNumber = setupName.split(".")[0]
+        mkdir(f"../plots/{setupNumber}")
+        get_spectra_plot(data, setupName)
+        get_spectra_plots(data, setupName)
+        get_intensity(data, setupName)
+            
+def print_columnNames(data):
+    for setupName in data:
         for columnName in data[setupName]:
             print(columnName[:-1])
         
@@ -144,5 +183,5 @@ def get_plots(data):
 # debug: would be more beautiful to only go once through all setupNames
 # debug: would be better to change setupName into setupNumber
 # debug: lambda is getting overwritten a lot of times
-        
+# debug: check whether a lambda column are the same
                   
