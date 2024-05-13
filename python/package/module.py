@@ -7,20 +7,20 @@ import os
 
 PROGRES = 1
 IGNORE = 2
-debug_list = [IGNORE]
+debug_list = [PROGRES, IGNORE]
 
 def print_dbg(identifier, *args, **kwargs):
     if identifier in debug_list:
         print(*args, **kwargs)
 
-def _process_file(data, file, setupName):
+def _process_file(data, file, setupNumber):
     line = file.readline()                   # first columnname                
     while (True):                            # iterate over the columns
         columnName = line                  
         if (columnName == ""):               # check end of file (debug lamda)
             break 
                                              # add new column to data
-        data[setupName][columnName] = np.zeros(4_098) # for some weird reason, 4_096 is not enough
+        data[setupNumber][columnName] = np.zeros(4_098) # for some weird reason, 4_096 is not enough
         lineNr = 0
         while (True):                        # iterate till new column name is found
             line = file.readline()    
@@ -29,7 +29,7 @@ def _process_file(data, file, setupName):
                 lineNr += 1
             except:                   
                 break                        # line is non numeric => line is column name
-            data[setupName][columnName][lineNr] = value   # add value to data
+            data[setupNumber][columnName][lineNr] = value   # add value to data
             
 # process could fastened by deleting variable columnName
 
@@ -62,11 +62,10 @@ def acquire_data():
         - Debug statements (print) are included and may be removed or commented out in production use.
     """
     data = {}                             
-    for fileNr in [1, 2, 3, 5, 6, 9, 11]: 
-        setupName = str(fileNr) + ".txt"
-        data[setupName] = {}                 # add set-up dict to data
-        with open("../processed-data/" + setupName) as file:
-            _process_file(data, file, setupName)
+    for setupNumber in [1, 2, 3, 5, 6, 9, 11]: 
+        data[setupNumber] = {}                 # add set-up dict to data
+        with open("../processed-data/" + str(setupNumber) + ".txt") as file:
+            _process_file(data, file, setupNumber)
             
     # separate_duplos(data)
     
@@ -76,11 +75,11 @@ def acquire_data():
 # debug: don't forget to update the docstring
 
 ### structure:
-# data[setupName][columnName][lineNr]
+# data[setupNumber][columnName][lineNr]
 
 # where:
 # data: one variable to contain all the data of the experiment
-# data[setupName]: dictionary with:
+# data[setupNumber]: dictionary with:
 #                  - keys:     name of spectrum (like background_1)
 #                  - values:   numpy array of the spectrum
 #                                  last key contains numpy array of the wavelengths
@@ -130,58 +129,57 @@ def mkdir(filename):
     if not os.path.isdir(filename):
         os.system(f"mkdir {filename}")
 
-def get_spectra_plot(data, setupName):
-    print_dbg(1, f"getting  spectra plots    for {setupName}...")
-    plt.title(f"{setupName}")
-    for columnName in data[setupName]:
+def get_spectra_plot(spectraDictionary, duploName):
+    print_dbg(1, f"getting  spectra plots    for {duploName}...")
+    plt.title(f"{duploName}")
+    for columnName in spectraDictionary:
         if (columnName != "λ\n" and columnName != "Raw_E\n"):
-            plt.plot(data[setupName]["λ\n"],
-                     data[setupName][columnName],
+            plt.plot(spectraDictionary["λ\n"],
+                     spectraDictionary[columnName],
                      label=columnName)
     plt.legend()
-    plt.savefig(f"../plots/all-spectra/{setupName[0]}.png")
+    plt.savefig(f"../plots/all-spectra/{duploName}.png")
     plt.clf() # clear figure
     
-def get_spectra_plots(data, setupName):
-    print_dbg(PROGRES, f"getting all spectra plots for {setupName}...")
-    for columnName in data[setupName]:
+def get_spectra_plots(data, setupNumber):
+    print_dbg(PROGRES, f"getting all spectra plots for {setupNumber}...")
+    for columnName in data[setupNumber]:
         if (columnName != "λ\n" and columnName != "Raw_E\n"):
-            plt.plot(data[setupName]["λ\n"],
-                    data[setupName][columnName])
+            plt.plot(data[setupNumber]["λ\n"],
+                    data[setupNumber][columnName])
             plt.ylim(0, 8_000)
             plt.title(columnName)
-            plt.savefig(f"../plots/{setupName[0]}/{columnName}.png") 
+            plt.savefig(f"../plots/{setupNumber}/{columnName}.png") 
             plt.clf()
     
-def get_intensity(data, setupName):
-    print_dbg(PROGRES, f"gettting intensities      for {setupName}")
+def get_intensity(data, setupNumber):
+    print_dbg(PROGRES, f"getting intensities       for {setupNumber}...")
     intensities = []
-    for columnName in data[setupName]:
+    for columnName in data[setupNumber]:
         if (columnName != "λ\n" and columnName != "Raw_E\n"):
-            intensity = data[setupName][columnName].sum()
+            intensity = data[setupNumber][columnName].sum()
             intensities.append(intensity)
     plt.plot(intensities)
-    plt.savefig(f"../plots/intensities/{setupName[0]}.png")
+    plt.savefig(f"../plots/intensities/{setupNumber}.png")
     plt.clf() #clear figure
 
 def get_plots(data):
     mkdir(f"../plots/intensities")
     mkdir(f"../plots/all-spectra")
-    for setupName in data:
-        setupNumber = setupName.split(".")[0]
+    for setupNumber in data:
         mkdir(f"../plots/{setupNumber}")
-        get_spectra_plot(data, setupName)
-        get_spectra_plots(data, setupName)
-        get_intensity(data, setupName)
+        get_spectra_plot(data[setupNumber], setupNumber)
+        get_spectra_plots(data, setupNumber)
+        get_intensity(data, setupNumber)
             
 def print_columnNames(data):
-    for setupName in data:
-        for columnName in data[setupName]:
+    for setupNumber in data:
+        for columnName in data[setupNumber]:
             print(columnName[:-1])
         
         
-# debug: would be more beautiful to only go once through all setupNames
-# debug: would be better to change setupName into setupNumber
+# debug: would be more beautiful to only go once through all setupNumbers
+# debug: would be better to change setupNumber into setupNumber
 # debug: lambda is getting overwritten a lot of times
 # debug: check whether a lambda column are the same
                   
