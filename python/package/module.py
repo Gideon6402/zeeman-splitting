@@ -7,7 +7,7 @@ import os
 
 PROGRES = 1
 IGNORE = 2
-debug_list = [PROGRES, IGNORE]
+debug_list = [PROGRES]
 
 def print_dbg(identifier, *args, **kwargs):
     if identifier in debug_list:
@@ -97,6 +97,12 @@ def create_duploName_dictionaries(data, newData, setupNumber):
         duploName = columnName.split(separator)[0]
         newData[setupNumber][duploName] = {}
         
+def add_lambdas(newData, data):
+    for setupNumber in newData:
+        for duploName in newData[setupNumber]:
+            newData[setupNumber][duploName]["λ\n"] = data[1]["λ\n"]
+                
+        
 def fill_duploName_dictionaries(data, newData, setupNumber):
     for columnName in list(data[setupNumber]):
         try:
@@ -111,9 +117,8 @@ def fill_duploName_dictionaries(data, newData, setupNumber):
                 duploNumber = float(duploNumber.split("_")[0]) # remove the _E at the end of the column name
                 newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
         except Exception as e:
-            # print(e)
             print_dbg(IGNORE, f"Ignoring {columnName[:-1]}")
-            continue
+    add_lambdas(newData, data)
 
 def separate_duplos(data):
     newData = {}
@@ -138,6 +143,7 @@ def get_spectra_plot(spectraDictionary, name):
                      spectraDictionary[columnName],
                      label=columnName)
     plt.legend()
+    mkdir(f"../plots/all-spectra")
     plt.savefig(f"../plots/all-spectra/{name}.png")
     plt.clf() # clear figure
     
@@ -149,6 +155,7 @@ def get_spectra_plots(spectraDictionary, setupNumber):
                     spectraDictionary[columnName])
             plt.ylim(0, 8_000)
             plt.title(columnName)
+            mkdir(f"../plots/{setupNumber}")
             plt.savefig(f"../plots/{setupNumber}/{columnName}.png") 
             plt.clf()
     
@@ -160,26 +167,34 @@ def get_intensity(spectraDictionary, setupNumber):
             intensity = spectraDictionary[columnName].sum()
             intensities.append(intensity)
     plt.plot(intensities)
+    mkdir(f"../plots/intensities")
     plt.savefig(f"../plots/intensities/{setupNumber}.png")
     plt.clf() #clear figure
 
 def get_plots(data):
-    mkdir(f"../plots/intensities")
-    mkdir(f"../plots/all-spectra")
     for setupNumber in data:
-        mkdir(f"../plots/{setupNumber}")
         get_spectra_plot(data[setupNumber], setupNumber)
         get_spectra_plots(data[setupNumber], setupNumber)
         get_intensity(data[setupNumber], setupNumber)
+        
+def get_new_plots(newData):
+    for setupNumber in newData:
+        for duploName in newData[setupNumber]:
+            spectra = newData[setupNumber][duploName]
+            name = str(setupNumber) + duploName
+            get_spectra_plot(spectra, name)
+            get_spectra_plots(spectra, name)
+            get_intensity(spectra, name)
             
 def print_columnNames(data):
     for setupNumber in data:
         for columnName in data[setupNumber]:
-            print(columnName[:-1])
+            print(f"setup number {setupNumber}, column name: {columnName}")
         
         
 # debug: would be more beautiful to only go once through all setupNumbers
 # debug: would be better to change setupNumber into setupNumber
 # debug: lambda is getting overwritten a lot of times
 # debug: check whether a lambda column are the same
+# debug: newData has a lot of empty entries, shouldn't cause to big of a problem
                   

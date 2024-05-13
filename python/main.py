@@ -4,8 +4,9 @@ from package import *
 
 def main():
     data = acquire_data()
-    # newData = separate_duplos(data)
-    get_plots(data)
+    newData = separate_duplos(data)
+    # print_columnNames(newData)
+    get_new_plots(newData)
         
 
 if __name__ == "__main__":
