@@ -1,6 +1,7 @@
 # from .private import _process_file
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 def _process_file(data, file, setupName):
     line = file.readline()                   # first columnname                
@@ -72,8 +73,12 @@ def acquire_data():
 #                                  last key contains numpy array of the wavelengths
 # lineNr: nth entry of the spectrum   
 
+def mkdir(filename):
+    if not os.path.isdir(filename):
+        os.system(f"mkdir {filename}")
+
 def get_spectra(data, setupName):
-    print(f"Processing {setupName}...")
+    print(f"getting  spectra     for {setupName}...")
     plt.title(f"{setupName}")
     for columnName in data[setupName]:
         if ("λ" not in columnName):
@@ -82,8 +87,10 @@ def get_spectra(data, setupName):
                      label=columnName)
     plt.legend()
     plt.savefig("../plots/" + setupName[0] + "/all-spectra.png")
+    plt.clf() # clear figure
     
 def get_intensity(data, setupName):
+    print(f"gettting intensities for {setupName}")
     intensities = []
     for columnName in data[setupName]:
         if (columnName != "λ\n"):
@@ -91,25 +98,13 @@ def get_intensity(data, setupName):
             intensities.append(intensity)
     plt.plot(intensities)
     plt.savefig(f"../plots/{setupName[0]}/intensity-vs-time.png")
+    plt.clf() #clear figure
 
-    
-    
 def get_plots(data):
     for setupName in data:
+        mkdir(f"../plots/{setupName[0]}")
         get_spectra(data, setupName)
         get_intensity(data, setupName)
-        
-
-        
-def get_plots_from_one_setup(data, setupName):
-    for columnName in data[setupName]:
-        print(f"processing {columnName}")
-        plt.plot(data[setupName]["λ\n"],
-                 data[setupName][columnName])
-        plt.ylim(0, 8_000)
-        plt.title(columnName)
-        plt.savefig(f"../plots/{setupName[0]}/{columnName}.png") 
-        plt.clf()
         
 
         

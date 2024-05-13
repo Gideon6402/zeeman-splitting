@@ -1,6 +1,5 @@
 #!/bin/python3
 
-import matplotlib.pyplot as plt
+from package import *
 
-x = [1, 2, 3, 4, 5]
-y = [2, 4, 7, 7, 2]
+mkdir("../plots/test")
