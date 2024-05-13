@@ -1,5 +1,5 @@
 #!/bin/python3
 
-from package import *
+# from package import *
 
-mkdir("../plots/test")
+# print(len(2))

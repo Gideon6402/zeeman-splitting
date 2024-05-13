@@ -3,6 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+
+debug_list = [1]
+
+def print_dbg(identifier, *args, **kwargs):
+    if identifier in debug_list:
+        print(*args, **kwargs)
+        
+        
+
 def _process_file(data, file, setupName):
     line = file.readline()                   # first columnname                
     while (True):                            # iterate over the columns
@@ -10,7 +19,7 @@ def _process_file(data, file, setupName):
         if (columnName == ""):               # check end of file (debug lamda)
             break 
                                              # add new column to data
-        data[setupName][columnName] = np.zeros(10_000)
+        data[setupName][columnName] = np.zeros(4_098) # for some weird reason, 4_096 is not enough
         lineNr = 0
         while (True):                        # iterate till new column name is found
             line = file.readline()    
@@ -22,6 +31,12 @@ def _process_file(data, file, setupName):
             data[setupName][columnName][lineNr] = value   # add value to data
             
 # process could fastened by deleting variable columnName
+
+# def separate_duplos(data):
+#     newData = {}
+#     for setupNumber in data:
+#         newData[setupNumber]
+#         for columnName in list(data[setupNumber]):
 
 def acquire_data():
     """
@@ -56,6 +71,8 @@ def acquire_data():
         data[setupName] = {}                 # add set-up dict to data
         with open("../processed-data/" + setupName) as file:
             _process_file(data, file, setupName)
+            
+    # separate_duplos(data)
     
     return data
             
@@ -77,36 +94,55 @@ def mkdir(filename):
     if not os.path.isdir(filename):
         os.system(f"mkdir {filename}")
 
-def get_spectra(data, setupName):
-    print(f"getting  spectra     for {setupName}...")
+def get_spectra_plot(data, setupName):
+    print_dbg(1, f"getting  spectra plots    for {setupName}...")
     plt.title(f"{setupName}")
     for columnName in data[setupName]:
-        if ("λ" not in columnName):
+        if (columnName != "λ\n" and columnName != "Raw_E\n"):
             plt.plot(data[setupName]["λ\n"],
                      data[setupName][columnName],
                      label=columnName)
     plt.legend()
-    plt.savefig("../plots/" + setupName[0] + "/all-spectra.png")
+    plt.savefig(f"../plots/all-spectra/{setupName[0]}.png")
     plt.clf() # clear figure
     
+def get_spectra_plots(data, setupName):
+    print_dbg(1, f"getting all spectra plots for {setupName}...")
+    for columnName in data[setupName]:
+        if (columnName != "λ\n" and columnName != "Raw_E\n"):
+            plt.plot(data[setupName]["λ\n"],
+                    data[setupName][columnName])
+            plt.ylim(0, 8_000)
+            plt.title(columnName)
+            plt.savefig(f"../plots/{setupName[0]}/{columnName}.png") 
+            plt.clf()
+    
 def get_intensity(data, setupName):
-    print(f"gettting intensities for {setupName}")
+    print_dbg(1, f"gettting intensities      for {setupName}")
     intensities = []
     for columnName in data[setupName]:
-        if (columnName != "λ\n"):
+        if (columnName != "λ\n" and columnName != "Raw_E\n"):
             intensity = data[setupName][columnName].sum()
             intensities.append(intensity)
     plt.plot(intensities)
-    plt.savefig(f"../plots/{setupName[0]}/intensity-vs-time.png")
+    plt.savefig(f"../plots/intensities/{setupName[0]}.png")
     plt.clf() #clear figure
 
 def get_plots(data):
+    mkdir(f"../plots/intensities")
+    mkdir(f"../plots/all-spectra")
     for setupName in data:
-        mkdir(f"../plots/{setupName[0]}")
-        get_spectra(data, setupName)
-        get_intensity(data, setupName)
+        # setupNumber = setupName.split(".")[0]
+        # mkdir(f"../plots/{setupNumber}")
+        # get_spectra_plot(data, setupName)
+        # get_spectra_plots(data, setupName)
+        # get_intensity(data, setupName)
+        for columnName in data[setupName]:
+            print(columnName[:-1])
         
-
         
+# debug: would be more beautiful to only go once through all setupNames
+# debug: would be better to change setupName into setupNumber
+# debug: lambda is getting overwritten a lot of times
         
                   
