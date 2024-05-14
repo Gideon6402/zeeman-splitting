@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-# columnames end with a '\n' so it will be cut every now and again with [:-1]
 
 PROGRES = 1
 IGNORE = 2
@@ -16,7 +15,7 @@ def print_dbg(identifier, *args, **kwargs):
 def _process_file(data, file, setupNumber):
     line = file.readline()                   # first columnname                
     while (True):                            # iterate over the columns
-        columnName = line                  
+        columnName = line[:-1]               # cut of the '\n' at the end of the line                  
         if (columnName == ""):               # check end of file (debug lamda)
             break 
                                              # add new column to data
@@ -97,10 +96,10 @@ def create_duploName_dictionaries(data, newData, setupNumber):
         duploName = columnName.split(separator)[0]
         newData[setupNumber][duploName] = {}
         
-def add_lambdas(newData, data):
-    for setupNumber in newData:
-        for duploName in newData[setupNumber]:
-            newData[setupNumber][duploName]["λ\n"] = data[1]["λ\n"]
+# def add_lambdas(newData, data):
+#     for setupNumber in newData:
+#         for duploName in newData[setupNumber]:
+#             newData[setupNumber][duploName]["λ"] = data[1]["λ"]
                 
         
 def fill_duploName_dictionaries(data, newData, setupNumber):
@@ -117,8 +116,8 @@ def fill_duploName_dictionaries(data, newData, setupNumber):
                 duploNumber = float(duploNumber.split("_")[0]) # remove the _E at the end of the column name
                 newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
         except Exception as e:
-            print_dbg(IGNORE, f"Ignoring {columnName[:-1]}")
-    add_lambdas(newData, data)
+            print_dbg(IGNORE, f"Ignoring {columnName}")
+    # add_lambdas(newData, data)
 
 def separate_duplos(data):
     newData = {}
@@ -134,12 +133,12 @@ def mkdir(filename):
     if not os.path.isdir(filename):
         os.system(f"mkdir {filename}")
 
-def get_spectra_plot(spectraDictionary, name):
+def get_spectra_plot(spectraDictionary, lamdaArray, name):
     print_dbg(1, f"getting  spectra plots    for {name}...")
     plt.title(f"{name}")
     for columnName in spectraDictionary:
-        if (columnName != "λ\n" and columnName != "Raw_E\n"):
-            plt.plot(spectraDictionary["λ\n"],
+        if (columnName != "λ" and columnName != "Raw_E"):
+            plt.plot(lamdaArray,
                      spectraDictionary[columnName],
                      label=columnName)
     plt.legend()
@@ -147,23 +146,23 @@ def get_spectra_plot(spectraDictionary, name):
     plt.savefig(f"../plots/all-spectra/{name}.png")
     plt.clf() # clear figure
     
-def get_spectra_plots(spectraDictionary, setupNumber):
-    print_dbg(PROGRES, f"getting all spectra plots for {setupNumber}...")
+def get_spectra_plots(spectraDictionary, lambdaArray, name):
+    print_dbg(PROGRES, f"getting all spectra plots for {name}...")
     for columnName in spectraDictionary:
-        if (columnName != "λ\n" and columnName != "Raw_E\n"):
-            plt.plot(spectraDictionary["λ\n"],
-                    spectraDictionary[columnName])
+        if (columnName != "λ" and columnName != "Raw_E"):
+            plt.plot(lambdaArray,
+                     spectraDictionary[columnName])
             plt.ylim(0, 8_000)
             plt.title(columnName)
-            mkdir(f"../plots/{setupNumber}")
-            plt.savefig(f"../plots/{setupNumber}/{columnName}.png") 
+            mkdir(f"../plots/{name}")
+            plt.savefig(f"../plots/{name}/{columnName}.png") 
             plt.clf()
     
 def get_intensity(spectraDictionary, setupNumber):
     print_dbg(PROGRES, f"getting intensities       for {setupNumber}...")
     intensities = []
     for columnName in spectraDictionary:
-        if (columnName != "λ\n" and columnName != "Raw_E\n"):
+        if (columnName != "λ" and columnName != "Raw_E"):
             intensity = spectraDictionary[columnName].sum()
             intensities.append(intensity)
     plt.plot(intensities)
@@ -177,13 +176,14 @@ def get_plots(data):
         get_spectra_plots(data[setupNumber], setupNumber)
         get_intensity(data[setupNumber], setupNumber)
         
-def get_new_plots(newData):
+def get_new_plots(data, newData):
+    lambdaArray = data[1]["λ"]
     for setupNumber in newData:
         for duploName in newData[setupNumber]:
             spectra = newData[setupNumber][duploName]
             name = str(setupNumber) + duploName
-            get_spectra_plot(spectra, name)
-            get_spectra_plots(spectra, name)
+            get_spectra_plot(spectra, lambdaArray, name)
+            get_spectra_plots(spectra, lambdaArray, name)
             get_intensity(spectra, name)
             
 def print_columnNames(data):
@@ -197,4 +197,6 @@ def print_columnNames(data):
 # debug: lambda is getting overwritten a lot of times
 # debug: check whether a lambda column are the same
 # debug: newData has a lot of empty entries, shouldn't cause to big of a problem
+# debug: creating a data class would have been better
+
                   
