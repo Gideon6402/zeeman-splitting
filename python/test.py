@@ -3,5 +3,10 @@
 from package import *
 
 data = acquire_data()
-plt.plot(data[1]["λ"])
-plt.show()
+newData = separate_duplos(data)
+
+lambdaArray = data[1]["λ"]
+spectrum = newData[5]["SoFlameWithSlit"][1.0]
+
+
+get_intensity(spectrum, lambdaArray)

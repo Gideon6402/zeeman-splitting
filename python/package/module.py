@@ -6,7 +6,9 @@ import os
 
 PROGRES = 1
 IGNORE = 2
-debug_list = [PROGRES]
+LAMBDA_MAX = 894.837
+Y_LIM = 8_000
+debug_list = []
 
 def print_dbg(identifier, *args, **kwargs):
     if identifier in debug_list:
@@ -95,11 +97,6 @@ def create_duploName_dictionaries(data, newData, setupNumber):
             separator = "-"
         duploName = columnName.split(separator)[0]
         newData[setupNumber][duploName] = {}
-        
-# def add_lambdas(newData, data):
-#     for setupNumber in newData:
-#         for duploName in newData[setupNumber]:
-#             newData[setupNumber][duploName]["λ"] = data[1]["λ"]
                 
         
 def fill_duploName_dictionaries(data, newData, setupNumber):
@@ -117,7 +114,6 @@ def fill_duploName_dictionaries(data, newData, setupNumber):
                 newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
         except Exception as e:
             print_dbg(IGNORE, f"Ignoring {columnName}")
-    # add_lambdas(newData, data)
 
 def separate_duplos(data):
     newData = {}
@@ -141,6 +137,11 @@ def get_spectra_plot(spectraDictionary, lamdaArray, name):
             plt.plot(lamdaArray,
                      spectraDictionary[columnName],
                      label=columnName)
+    plt.title(f"Intensity vs wavelength for all runs")
+    plt.xlim(0, LAMBDA_MAX)
+    plt.ylim(0, Y_LIM)
+    plt.xlabel(f"λ")
+    plt.ylabel(f"intensity")
     plt.legend()
     mkdir(f"../plots/all-spectra")
     plt.savefig(f"../plots/all-spectra/{name}.png")
@@ -152,20 +153,36 @@ def get_spectra_plots(spectraDictionary, lambdaArray, name):
         if (columnName != "λ" and columnName != "Raw_E"):
             plt.plot(lambdaArray,
                      spectraDictionary[columnName])
-            plt.ylim(0, 8_000)
-            plt.title(columnName)
+            plt.title(f"Intensity vs wavelength")
+            plt.xlim(580, 600)
+            plt.ylim(0, Y_LIM)
+            plt.xlabel(f"λ")
+            plt.ylabel(f"intensity")
             mkdir(f"../plots/{name}")
             plt.savefig(f"../plots/{name}/{columnName}.png") 
             plt.clf()
+            
+def get_intensity(spectrum, lambdaArray):
+    """ Integrating over the 589 nm peak of the sodium vapor lamp. Integrating
+        from 580 to 600 """
+    lowerBoundIndex = np.where(lambdaArray > 580)[0][0]  # first select x values, the first index where lambda is bigger then 580
+    upperBoundIndex = np.where(lambdaArray > 600)[0][0]  # dito
+    intensity = spectrum[lowerBoundIndex:upperBoundIndex].sum()
+    return intensity
     
-def get_intensity(spectraDictionary, setupNumber):
+    
+def get_intensity_plots(spectraDictionary, lambdaArray, setupNumber):
     print_dbg(PROGRES, f"getting intensities       for {setupNumber}...")
     intensities = []
     for columnName in spectraDictionary:
         if (columnName != "λ" and columnName != "Raw_E"):
-            intensity = spectraDictionary[columnName].sum()
+            intensity = get_intensity(spectraDictionary[columnName], lambdaArray)
             intensities.append(intensity)
-    plt.plot(intensities)
+    plt.plot(range(len(intensities)), intensities)
+    plt.title(f"Intensity vs run")
+    # plt.xlim(580, 600)
+    plt.xlabel(f"run number")
+    plt.ylabel(f"intensity")
     mkdir(f"../plots/intensities")
     plt.savefig(f"../plots/intensities/{setupNumber}.png")
     plt.clf() #clear figure
@@ -174,17 +191,17 @@ def get_plots(data):
     for setupNumber in data:
         get_spectra_plot(data[setupNumber], setupNumber)
         get_spectra_plots(data[setupNumber], setupNumber)
-        get_intensity(data[setupNumber], setupNumber)
+        get_intensity_plots(data[setupNumber], setupNumber)
         
 def get_new_plots(data, newData):
-    lambdaArray = data[1]["λ"]
+    lambdaArray = data[1]["λ"] # lambda is found all over the place but they should all be the same
     for setupNumber in newData:
         for duploName in newData[setupNumber]:
             spectra = newData[setupNumber][duploName]
             name = str(setupNumber) + duploName
-            get_spectra_plot(spectra, lambdaArray, name)
-            get_spectra_plots(spectra, lambdaArray, name)
-            get_intensity(spectra, name)
+            # get_spectra_plot(spectra, lambdaArray, name)
+            # get_spectra_plots(spectra, lambdaArray, name)
+            get_intensity_plots(spectra, lambdaArray, name)
             
 def print_columnNames(data):
     for setupNumber in data:
@@ -198,5 +215,6 @@ def print_columnNames(data):
 # debug: check whether a lambda column are the same
 # debug: newData has a lot of empty entries, shouldn't cause to big of a problem
 # debug: creating a data class would have been better
+# debug: figure out whether y values are intensity or counts
 
                   
