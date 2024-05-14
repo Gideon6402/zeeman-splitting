@@ -3,7 +3,6 @@ Acces more then the first measurement
 Comment the c++ code
 comment the python code
 explore data structure: print all names
-instead of checking END OF VALUES use fact that we have 4096 numbers
-trim last zeros from spectra arrays
+trim last zeros from spectra arrays (not necessary it is fast enough)
 substract background
 do not import private functions
