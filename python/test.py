@@ -2,11 +2,6 @@
 
 from package import *
 
-data = acquire_data()
-newData = separate_duplos(data)
+duploName, duploNumber = get_duploName_and_Number("background_1_E")
 
-lambdaArray = data[1]["λ"]
-spectrum = newData[5]["SoFlameWithSlit"][1.0]
-
-
-get_intensity(spectrum, lambdaArray)
+print(duploName, '\n', duploNumber)

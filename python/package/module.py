@@ -14,6 +14,9 @@ def print_dbg(identifier, *args, **kwargs):
     """ prints if first argument is in debugList """
     if identifier in debugList:
         print(*args, **kwargs)
+        
+def avarage(list):
+    return sum(list) / len(list)
 
 def _process_file(data, file, setupNumber):
     line = file.readline()                   # first columnname                
@@ -91,38 +94,37 @@ from .module import *
  
 def get_duploName_and_Number(columnName):
     if ("background" in columnName):
-        separator = "_"
+        duploName, duploNumber, _ = columnName.split("_")
     else:
-        separator = "-"
-    duploName, duploNumber = columnName.split(separator)[0]
-    duploNumber = duploNumber.split("_")[0]
+        duploName, duploNumber = columnName.split("-")
+        duploNumber = duploNumber.split("_")[0]
+        
+    duploNumber = int(duploNumber)
     return duploName, duploNumber
     
 
 def create_duploName_dictionaries(data, newData, setupNumber):
     newData[setupNumber] = {}
     for columnName in data[setupNumber]:
-        if "λ" not in columnName:
-            duploName, _ = get_duploName_and_Number(columnName)
-            newData[setupNumber][duploName] = {}
+        if "λ" not in columnName: # we'll use the λ of the old data
+            try:
+                duploName, _ = get_duploName_and_Number(columnName)
+                newData[setupNumber][duploName] = {}
+            except Exception as e:
+                print_dbg(IGNORE, f"Ignoring {columnName}")
+# Yes we are assigning dictionaries a lot of times but this process doesn't take long anyway
                 
-        
+
 def fill_duploName_dictionaries(data, newData, setupNumber):
     for columnName in list(data[setupNumber]):
         if "λ" not in columnName:
             try:
-                if ("background" in columnName):
-                    ## splitting up e.g. background_1_E
-                    duploName, duploNumber, _ = columnName.split("_") 
-                    duploNumber = float(duploNumber)
-                    newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
-                else:
-                    ## splitting up e.g. fireOnly-10_E
-                    duploName, duploNumber = columnName.split("-")
-                    duploNumber = float(duploNumber.split("_")[0]) # remove the _E at the end of the column name
-                    newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
-            except Exception as e:
-                print_dbg(IGNORE, f"Ignoring {columnName}")
+                duploName, duploNumber = get_duploName_and_Number(columnName)
+                newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
+            except:
+                # already printed that we are ignoring this one
+                continue
+                
 
 def separate_duplos(data):
     newData = {}
