@@ -7,11 +7,12 @@ import os
 PROGRES = 1
 IGNORE = 2
 LAMBDA_MAX = 894.837
-Y_LIM = 8_000
-debug_list = []
+# Y_LIM = 8
+debugList = [PROGRES]
 
 def print_dbg(identifier, *args, **kwargs):
-    if identifier in debug_list:
+    """ prints if first argument is in debugList """
+    if identifier in debugList:
         print(*args, **kwargs)
 
 def _process_file(data, file, setupNumber):
@@ -87,33 +88,41 @@ def acquire_data():
 # lineNr: nth entry of the spectrum   
 
 from .module import *
+ 
+def get_duploName_and_Number(columnName):
+    if ("background" in columnName):
+        separator = "_"
+    else:
+        separator = "-"
+    duploName, duploNumber = columnName.split(separator)[0]
+    duploNumber = duploNumber.split("_")[0]
+    return duploName, duploNumber
+    
 
 def create_duploName_dictionaries(data, newData, setupNumber):
     newData[setupNumber] = {}
     for columnName in data[setupNumber]:
-        if ("background" in columnName):
-            separator = "_"
-        else:
-            separator = "-"
-        duploName = columnName.split(separator)[0]
-        newData[setupNumber][duploName] = {}
+        if "λ" not in columnName:
+            duploName, _ = get_duploName_and_Number(columnName)
+            newData[setupNumber][duploName] = {}
                 
         
 def fill_duploName_dictionaries(data, newData, setupNumber):
     for columnName in list(data[setupNumber]):
-        try:
-            if ("background" in columnName):
-                ## splitting up e.g. background_1_E
-                duploName, duploNumber, _ = columnName.split("_") 
-                duploNumber = float(duploNumber)
-                newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
-            else:
-                ## splitting up e.g. fireOnly-10_E
-                duploName, duploNumber = columnName.split("-")
-                duploNumber = float(duploNumber.split("_")[0]) # remove the _E at the end of the column name
-                newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
-        except Exception as e:
-            print_dbg(IGNORE, f"Ignoring {columnName}")
+        if "λ" not in columnName:
+            try:
+                if ("background" in columnName):
+                    ## splitting up e.g. background_1_E
+                    duploName, duploNumber, _ = columnName.split("_") 
+                    duploNumber = float(duploNumber)
+                    newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
+                else:
+                    ## splitting up e.g. fireOnly-10_E
+                    duploName, duploNumber = columnName.split("-")
+                    duploNumber = float(duploNumber.split("_")[0]) # remove the _E at the end of the column name
+                    newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
+            except Exception as e:
+                print_dbg(IGNORE, f"Ignoring {columnName}")
 
 def separate_duplos(data):
     newData = {}
@@ -125,7 +134,7 @@ def separate_duplos(data):
 
 
 
-def mkdir(filename):
+def make_directory(filename):
     if not os.path.isdir(filename):
         os.system(f"mkdir {filename}")
 
@@ -139,11 +148,10 @@ def get_spectra_plot(spectraDictionary, lamdaArray, name):
                      label=columnName)
     plt.title(f"Intensity vs wavelength for all runs")
     plt.xlim(0, LAMBDA_MAX)
-    plt.ylim(0, Y_LIM)
     plt.xlabel(f"λ")
     plt.ylabel(f"intensity")
     plt.legend()
-    mkdir(f"../plots/all-spectra")
+    make_directory(f"../plots/all-spectra")
     plt.savefig(f"../plots/all-spectra/{name}.png")
     plt.clf() # clear figure
     
@@ -155,20 +163,20 @@ def get_spectra_plots(spectraDictionary, lambdaArray, name):
                      spectraDictionary[columnName])
             plt.title(f"Intensity vs wavelength")
             plt.xlim(580, 600)
-            plt.ylim(0, Y_LIM)
             plt.xlabel(f"λ")
             plt.ylabel(f"intensity")
-            mkdir(f"../plots/{name}")
+            make_directory(f"../plots/{name}")
             plt.savefig(f"../plots/{name}/{columnName}.png") 
             plt.clf()
             
 def get_intensity(spectrum, lambdaArray):
     """ Integrating over the 589 nm peak of the sodium vapor lamp. Integrating
         from 580 to 600 """
-    lowerBoundIndex = np.where(lambdaArray > 580)[0][0]  # first select x values, the first index where lambda is bigger then 580
-    upperBoundIndex = np.where(lambdaArray > 600)[0][0]  # dito
-    intensity = spectrum[lowerBoundIndex:upperBoundIndex].sum()
-    return intensity
+    # lowerBoundIndex = np.where(lambdaArray > 580)[0][0]  # first select x values, the first index where lambda is bigger then 580
+    # upperBoundIndex = np.where(lambdaArray > 600)[0][0]  # dito
+    # intensity = spectrum[lowerBoundIndex:upperBoundIndex].sum()
+    # return intensity
+    return spectrum.sum()
     
     
 def get_intensity_plots(spectraDictionary, lambdaArray, setupNumber):
@@ -183,7 +191,7 @@ def get_intensity_plots(spectraDictionary, lambdaArray, setupNumber):
     # plt.xlim(580, 600)
     plt.xlabel(f"run number")
     plt.ylabel(f"intensity")
-    mkdir(f"../plots/intensities")
+    make_directory(f"../plots/intensities")
     plt.savefig(f"../plots/intensities/{setupNumber}.png")
     plt.clf() #clear figure
 
@@ -199,8 +207,8 @@ def get_new_plots(data, newData):
         for duploName in newData[setupNumber]:
             spectra = newData[setupNumber][duploName]
             name = str(setupNumber) + duploName
-            # get_spectra_plot(spectra, lambdaArray, name)
-            # get_spectra_plots(spectra, lambdaArray, name)
+            get_spectra_plot(spectra, lambdaArray, name)
+            get_spectra_plots(spectra, lambdaArray, name)
             get_intensity_plots(spectra, lambdaArray, name)
             
 def print_columnNames(data):
