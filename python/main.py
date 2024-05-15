@@ -6,39 +6,51 @@ def main():
     data = acquire_data()
     newData = separate_duplos(data)
     # print_columnNames(newData)
-    lambdaArray = data[1]["λ"] # lambda is found all over the place but they should all be the same
+    lambdaArray = data[1]["λ"] # lambda is found all over the place but they
+                               # should all be the same
     
+    # 10 spectra of the background were recorded and saved in a dictionary:
     averageBackgroundLight = get_average(newData[1]["background"])
-    print(f"Average intensity from background: {averageBackgroundLight}")
+    print(f"Average intensity from background: {averageBackgroundLight:.4g}")
     
+    # dito:
     averageFireLight = get_average(newData[2]["fireOnly"])
-    print(f"Average intensity from fire: {averageFireLight}")
+    print(f"Average intensity from fire: {averageFireLight:.4g}")
     
-    # averageLampLight = get_average(data[5]["LampShielded_E"])
-    # print(f"Average intensity from sodium vapor lamp: {averageLampLight}")
+    # Only 1 spectrum of the lamp light was recorded and this one is saved in
+    # a numpy array:
+    lampLightSpectrum = data[5]["LampShielded_E"]
+    LampLight = lampLightSpectrum.sum()
+    print(f"Average intensity from sodium vapor lamp: {LampLight:.4g}")
+    
+    # We want to see whether adding salt to the flame cast a shadow. The first
+    # measurement always was without salt. Let's get the average of those
+    
+    sodiumNames = ["SoFlameWithSlit", "SoFlameWithSlitTwo", "SoFlameWithSlitThree"]
+    sodiumWithMagnetNames = ["SodiumWithMagnetic", "Two", "Three"]
+    mercuryNames = ["fireWithSodium", "two", "third"]
+    
+    noSaltSpectra = np.array([newData[5]["SoFlameWithSlit"][1],
+                              newData[5]["SoFlameWithSlitTwo"][1],
+                              newData[5]["SoFlameWithSlitThree"][1],
+                              newData[6]["SodiumWithMagnetic"][1],
+                              newData[6]["Two"][1],
+                              newData[6]["Three"][1]])
     
     
-    # backgroundValues = []
-    # for value in newData[1]["background"]:
-    #     backgroundValues.append(value)
-    # avarageBackground = avarage(backgroundValues)
-    # print(f"Avarage background: {avarageBackground}")
+    noSaltIntensities = [spectrum.sum() for spectrum in noSaltSpectra]
+    averageIntensity = sum(noSaltIntensities) / len(noSaltIntensities)
+    print(f"Average intensity of sodium vapor lamp and flame: {averageIntensity:.4g}")
+
+    for name in sodiumNames:
+        plt.plot(lambdaArray, newData[5][name], label=name)
     
-    # fireValues = []
-    # for value in newData[1]["fireOnly"]:
-    #     fireValues.append(value)
-    # avarageFire = avarage(fireValues)
-    # print(f"Avarage intensity from fire: {avarageFire}")
+    for name in sodiumWithMagnetNames:
+        plt.plot(lambdaArray, newData[6][name], label=name)
+    
+    # for name
     
     
-    
-    # for setupNumber in newData:
-    #     for duploName in newData[setupNumber]:
-    #         spectra = newData[setupNumber][duploName]
-    #         name = str(setupNumber) + duploName
-    #         get_spectra_plot(spectra, lambdaArray, name)
-    #         get_spectra_plots(spectra, lambdaArray, name)
-    #         get_intensity_plots(spectra, lambdaArray, name)
         
 
 if __name__ == "__main__":

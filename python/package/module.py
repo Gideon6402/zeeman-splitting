@@ -181,27 +181,30 @@ def get_intensity(spectrum, lambdaArray):
     return spectrum.sum()
     
     
-def get_intensity_plots(spectraDictionary, lambdaArray, setupNumber):
-    print_dbg(PROGRES, f"getting intensities       for {setupNumber}...")
+def get_intensity_plot(spectraDictionary, lambdaArray, dictionaryName):
+    print_dbg(PROGRES, f"getting intensities       for {dictionaryName}...")
     intensities = []
-    for columnName in spectraDictionary:
-        if (columnName != "λ" and columnName != "Raw_E"):
-            intensity = get_intensity(spectraDictionary[columnName], lambdaArray)
+    for spectrumNameOrNumber in spectraDictionary:
+        if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"):
+            intensity = get_intensity(spectraDictionary[spectrumNameOrNumber], lambdaArray)
             intensities.append(intensity)
-    plt.plot(range(len(intensities)), intensities)
+    plt.plot(range(len(intensities)), intensities, label=spectrumNameOrNumber)
     plt.title(f"Intensity vs run")
     # plt.xlim(580, 600)
     plt.xlabel(f"run number")
     plt.ylabel(f"intensity")
     make_directory(f"../plots/intensities")
-    plt.savefig(f"../plots/intensities/{setupNumber}.png")
+    plt.savefig(f"../plots/intensities/{dictionaryName}.png")
     plt.clf() #clear figure
+    
+# def plot_intensities():
+    
 
 def get_plots(data):
     for setupNumber in data:
         get_spectra_plot(data[setupNumber], setupNumber)
         get_spectra_plots(data[setupNumber], setupNumber)
-        get_intensity_plots(data[setupNumber], setupNumber)
+        get_intensity_plot(data[setupNumber], setupNumber)
         
 def get_new_plots(data, newData):
     lambdaArray = data[1]["λ"] # lambda is found all over the place but they should all be the same
@@ -211,17 +214,18 @@ def get_new_plots(data, newData):
             name = str(setupNumber) + duploName
             get_spectra_plot(spectra, lambdaArray, name)
             get_spectra_plots(spectra, lambdaArray, name)
-            get_intensity_plots(spectra, lambdaArray, name)
+            get_intensity_plot(spectra, lambdaArray, name)
 
 def get_average(dictionary):
-    """ Return the average value of all values in a dictionary of arrays. """
-    sumOfValues = 0
-    nrOfValues = 0
-    for key in dictionary:
-        for value in dictionary[key]:
-            sumOfValues += value
-            nrOfValues += 1
-    return sumOfValues / nrOfValues
+    """ Return the average intensity of all spectra in a dictionary """
+    sumOfIntensities = 0
+    nrOfSpectra = 0
+    for spectrumName in dictionary:
+        intensity = dictionary[spectrumName].sum()
+        sumOfIntensities += intensity
+        nrOfSpectra += 1
+        
+    return sumOfIntensities / nrOfSpectra
     
             
 def print_duploNames(newData):
