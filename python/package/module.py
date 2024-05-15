@@ -8,7 +8,7 @@ PROGRES = 1
 IGNORE = 2
 LAMBDA_MAX = 894.837
 # Y_LIM = 8
-debugList = []
+debugList = [IGNORE]
 
 def print_dbg(identifier, *args, **kwargs):
     """ prints if first argument is in debugList """
@@ -250,17 +250,19 @@ def print_average_intensity_lamp_and_flame(newData):
     noSaltIntensities = [spectrum.sum() for spectrum in noSaltSpectra]
     averageIntensity = sum(noSaltIntensities) / len(noSaltIntensities)
     print(f"Average intensity of sodium vapor lamp and flame: {averageIntensity:.4g}")
+    return averageIntensity
 
    
-def plot_experiment(data, newData, duploNameList, setupNumber):  
+def plot_experiment(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
+                    newData, duploNameList, setupNumber):  
+    
     plt.figure(figsize=(8, 6))
     for name in duploNameList:
         intensities = get_intensities(newData[setupNumber][name])
         plt.plot(intensities, label=name, linestyle='-', marker = 'x', linewidth=0.5)
-    plt.plot(get_intensities(newData[11]["fireWithSodium"]),
-             label="fire only", linestyle='-', marker = 'x', linewidth=0.5)
-    plt.axhline(y=data[5]['WithoutFlame_E'].sum(), linestyle='-', linewidth=0.5,
-                label="light only", color="purple")
+    plt.axhline(background, label="background", color="red")
+    plt.axhline(fireLight, label="fire only", color="purple")
+    plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and fire together", color="brown")
     
     plt.title("intensity vs run number for all three triplo runs")
     plt.xlabel("run number")
