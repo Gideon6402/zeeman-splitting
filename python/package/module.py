@@ -13,7 +13,8 @@ debugList = [IGNORE]
 class DataProcessor:
     def __init__(self):
         self.data = {}
-        self.newData = {}
+        self.self.newData = {}
+        self.acquire_data()
 
     @staticmethod
     def print_dbg(identifier, *args, **kwargs):
@@ -25,14 +26,14 @@ class DataProcessor:
     def avarage(list):
         return sum(list) / len(list)
 
-    def _process_file(file, setupNumber):
+    def _process_file(self, file, setupNumber):
         line = file.readline()                   # first columnname                
         while (True):                            # iterate over the columns
             columnName = line[:-1]               # cut of the '\n' at the end of the line                  
             if (columnName == ""):               # check end of file (debug lamda)
                 break 
                                                 # add new column to data
-            data[setupNumber][columnName] = np.zeros(4_098) # for some weird reason, 4_096 is not enough
+            self.data[setupNumber][columnName] = np.zeros(4_098) # for some weird reason, 4_096 is not enough
             lineNr = 0
             while (True):                        # iterate till new column name is found
                 line = file.readline()    
@@ -41,12 +42,12 @@ class DataProcessor:
                     lineNr += 1
                 except:                   
                     break                        # line is non numeric => line is column name
-                data[setupNumber][columnName][lineNr] = value   # add value to data
+                self.data[setupNumber][columnName][lineNr] = value   # add value to data
                 
     # process could fastened by deleting variable columnName
 
                 
-    def acquire_data():
+    def acquire_data(self):
         """
         Reads data from a series of text files named by number ("1.txt", "2.txt", etc.) in the "../processed-data/" directory.
         Each file is expected to contain multiple sections, each starting with a single line denoting a column name,
@@ -73,15 +74,12 @@ class DataProcessor:
             - The function currently does not handle cases where files or expected data formats are missing or incorrect.
             - Debug statements (print) are included and may be removed or commented out in production use.
         """
-        data = {}                             
         for setupNumber in [1, 2, 3, 5, 6, 9, 11]: 
-            data[setupNumber] = {}                 # add set-up dict to data
+            self.data[setupNumber] = {}                 # add set-up dict to data
             with open("../processed-data/" + str(setupNumber) + ".txt") as file:
-                _process_file(data, file, setupNumber)
+                self._process_file(file, setupNumber)
                 
         # separate_duplos(data)
-        
-        return data
                 
                     
     # debug: don't forget to update the docstring
@@ -97,8 +95,7 @@ class DataProcessor:
     #                                  last key contains numpy array of the wavelengths
     # lineNr: nth entry of the spectrum   
 
-    from .module import *
-    
+    @staticmethod
     def get_duploName_and_Number(columnName):
         if ("background" in columnName):
             duploName, duploNumber, _ = columnName.split("_")
@@ -109,37 +106,37 @@ class DataProcessor:
         duploNumber = int(duploNumber)
         return duploName, duploNumber
         
-
-    def create_duploName_dictionaries(data, newData, setupNumber):
-        newData[setupNumber] = {}
+    @staticmethod
+    def create_duploName_dictionaries(self, setupNumber):
+        self.newData[setupNumber] = {}
         for columnName in data[setupNumber]:
             if "λ" not in columnName: # we'll use the λ of the old data
                 try:
                     duploName, _ = get_duploName_and_Number(columnName)
-                    newData[setupNumber][duploName] = {}
+                    self.newData[setupNumber][duploName] = {}
                 except Exception as e:
                     print_dbg(IGNORE, f"Ignoring {setupNumber}: {columnName}")
     # Yes we are assigning dictionaries a lot of times but this process doesn't take long anyway
                     
 
-    def fill_duploName_dictionaries(data, newData, setupNumber):
+    def fill_duploName_dictionaries(data, self.newData, setupNumber):
         for columnName in list(data[setupNumber]):
             if "λ" not in columnName:
                 try:
                     duploName, duploNumber = get_duploName_and_Number(columnName)
-                    newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
+                    self.newData[setupNumber][duploName][duploNumber] = data[setupNumber][columnName]
                 except:
                     # already printed that we are ignoring this one
                     continue
                     
 
     def separate_duplos(data):
-        newData = {}
+        self.newData = {}
         for setupNumber in data:
-            create_duploName_dictionaries(data, newData, setupNumber)
-            fill_duploName_dictionaries(data, newData, setupNumber)
+            create_duploName_dictionaries(data, self.newData, setupNumber)
+            fill_duploName_dictionaries(data, self.newData, setupNumber)
 
-        return newData
+        return self.newData
 
 
 
@@ -211,11 +208,11 @@ class DataProcessor:
             get_spectra_plots(data[setupNumber], setupNumber)
             get_intensity_plot(data[setupNumber], setupNumber)
             
-    def get_new_plots(data, newData):
+    def get_new_plots(data, self.newData):
         lambdaArray = data[1]["λ"] # lambda is found all over the place but they should all be the same
-        for setupNumber in newData:
-            for duploName in newData[setupNumber]:
-                spectra = newData[setupNumber][duploName]
+        for setupNumber in self.newData:
+            for duploName in self.newData[setupNumber]:
+                spectra = self.newData[setupNumber][duploName]
                 name = str(setupNumber) + duploName
                 get_spectra_plot(spectra, lambdaArray, name)
                 get_spectra_plots(spectra, lambdaArray, name)
@@ -233,9 +230,9 @@ class DataProcessor:
         return sumOfIntensities / nrOfSpectra
         
                 
-    def print_duploNames(newData):
-        for setupNumber in newData:
-            for duploName in newData[setupNumber]:
+    def print_duploNames(self.newData):
+        for setupNumber in self.newData:
+            for duploName in self.newData[setupNumber]:
                 print(f"setup number {setupNumber}, duplo name: {duploName}")
 
     def print_columnNames(data):
@@ -243,15 +240,15 @@ class DataProcessor:
             for columnName in data[setupNumber]:
                 print(f"setup number {setupNumber}, column name: {columnName}")
                 
-    def print_average_intensity_lamp_and_flame(newData):
+    def print_average_intensity_lamp_and_flame(self.newData):
         """ We want to see whether adding salt to the flame cast a shadow. The first
         measurement always was without salt. Let's get the average of those """
-        noSaltSpectra = np.array([newData[5]["SoFlameWithSlit"][1],
-                                newData[5]["SoFlameWithSlitTwo"][1],
-                                newData[5]["SoFlameWithSlitThree"][1],
-                                newData[6]["SodiumWithMagnetic"][1],
-                                newData[6]["Two"][1],
-                                newData[6]["Three"][1]])
+        noSaltSpectra = np.array([self.newData[5]["SoFlameWithSlit"][1],
+                                self.newData[5]["SoFlameWithSlitTwo"][1],
+                                self.newData[5]["SoFlameWithSlitThree"][1],
+                                self.newData[6]["SodiumWithMagnetic"][1],
+                                self.newData[6]["Two"][1],
+                                self.newData[6]["Three"][1]])
         
         
         noSaltIntensities = [spectrum.sum() for spectrum in noSaltSpectra]
@@ -261,11 +258,11 @@ class DataProcessor:
 
     @staticmethod 
     def plot_experiment(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
-                        newData, duploNameList, setupNumber):  
+                        self.newData, duploNameList, setupNumber):  
         
         plt.figure(figsize=(8, 6))
         for name in duploNameList:
-            intensities = get_intensities(newData[setupNumber][name])
+            intensities = get_intensities(self.newData[setupNumber][name])
             plt.plot(intensities, label=name, linestyle='-', marker = 'x', linewidth=0.5)
         plt.axhline(background, label="background", color="red")
         plt.axhline(fireLight, label="fire only", color="purple")
@@ -287,9 +284,9 @@ class DataProcessor:
     # debug: would be better to change setupNumber into setupNumber
     # debug: lambda is getting overwritten a lot of times
     # debug: check whether a lambda column are the same
-    # debug: newData has a lot of empty entries, shouldn't cause to big of a problem
+    # debug: self.newData has a lot of empty entries, shouldn't cause to big of a problem
     # debug: creating a data class would have been better
     # debug: figure out whether y values are intensity or counts
-    # debug: we could remove the setupNumber of newData
+    # debug: we could remove the setupNumber of self.newData
 
                     
