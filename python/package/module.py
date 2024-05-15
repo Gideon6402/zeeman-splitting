@@ -235,6 +235,43 @@ def print_columnNames(data):
     for setupNumber in data:
         for columnName in data[setupNumber]:
             print(f"setup number {setupNumber}, column name: {columnName}")
+            
+def print_average_intensity_lamp_and_flame(newData):
+    """ We want to see whether adding salt to the flame cast a shadow. The first
+    measurement always was without salt. Let's get the average of those """
+    noSaltSpectra = np.array([newData[5]["SoFlameWithSlit"][1],
+                              newData[5]["SoFlameWithSlitTwo"][1],
+                              newData[5]["SoFlameWithSlitThree"][1],
+                              newData[6]["SodiumWithMagnetic"][1],
+                              newData[6]["Two"][1],
+                              newData[6]["Three"][1]])
+    
+    
+    noSaltIntensities = [spectrum.sum() for spectrum in noSaltSpectra]
+    averageIntensity = sum(noSaltIntensities) / len(noSaltIntensities)
+    print(f"Average intensity of sodium vapor lamp and flame: {averageIntensity:.4g}")
+
+   
+def plot_experiment(data, newData, duploNameList, setupNumber):  
+    plt.figure(figsize=(8, 6))
+    for name in duploNameList:
+        intensities = get_intensities(newData[setupNumber][name])
+        plt.plot(intensities, label=name, linestyle='-', marker = 'x', linewidth=0.5)
+    plt.plot(get_intensities(newData[11]["fireWithSodium"]),
+             label="fire only", linestyle='-', marker = 'x', linewidth=0.5)
+    plt.axhline(y=data[5]['WithoutFlame_E'].sum(), linestyle='-', linewidth=0.5,
+                label="light only", color="purple")
+    
+    plt.title("intensity vs run number for all three triplo runs")
+    plt.xlabel("run number")
+    plt.ylabel(f"intensity (unknown unit)")
+    plt.ylim(0, max(intensities)*1.1)
+    plt.legend()
+    make_directory("../report-plots")
+    plt.savefig(f"../report-plots/{setupNumber}: intensity vs run.png")
+    plt.clf()
+
+    
         
         
 # debug: would be more beautiful to only go once through all setupNumbers
@@ -244,5 +281,6 @@ def print_columnNames(data):
 # debug: newData has a lot of empty entries, shouldn't cause to big of a problem
 # debug: creating a data class would have been better
 # debug: figure out whether y values are intensity or counts
+# debug: we could remove the setupNumber of newData
 
                   
