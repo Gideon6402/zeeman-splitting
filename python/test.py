@@ -2,6 +2,7 @@
 
 from package import *
 
-duploName, duploNumber = get_duploName_and_Number("background_1_E")
+data = acquire_data()
+newData = separate_duplos(data)
 
-print(duploName, '\n', duploNumber)
+print_duploNames(newData)

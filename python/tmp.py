@@ -1,10 +1,9 @@
-def get_spectra_plots(spectraDictionary, name):
-    print_dbg(PROGRES, f"getting all spectra plots for {name}...")
-    for columnName in spectraDictionary:
-        if (columnName != "λ" and columnName != "Raw_E"):
-            plt.plot(spectraDictionary["λ"],
-                    spectraDictionary[columnName])
-            plt.ylim(0, 8_000)
-            plt.title(columnName)
-            mkdir(f"../plots/{name}")
-            plt.savefig(f"../plots/{name}/{columnName}.png") 
+def get_average(dictionary):
+    """ Return the average value of all values in a dictionary"""
+    sumOfValues = 0
+    nrOfValues = 0
+    for key in dictionary:
+        for value in dictionary[key]:
+            sumOfValues += value
+            nrOfValues += 1
+    return sumOfValues / nrOfValues

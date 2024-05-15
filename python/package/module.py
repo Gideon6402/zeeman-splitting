@@ -8,7 +8,7 @@ PROGRES = 1
 IGNORE = 2
 LAMBDA_MAX = 894.837
 # Y_LIM = 8
-debugList = [PROGRES]
+debugList = []
 
 def print_dbg(identifier, *args, **kwargs):
     """ prints if first argument is in debugList """
@@ -111,7 +111,7 @@ def create_duploName_dictionaries(data, newData, setupNumber):
                 duploName, _ = get_duploName_and_Number(columnName)
                 newData[setupNumber][duploName] = {}
             except Exception as e:
-                print_dbg(IGNORE, f"Ignoring {columnName}")
+                print_dbg(IGNORE, f"Ignoring {setupNumber}: {columnName}")
 # Yes we are assigning dictionaries a lot of times but this process doesn't take long anyway
                 
 
@@ -212,7 +212,23 @@ def get_new_plots(data, newData):
             get_spectra_plot(spectra, lambdaArray, name)
             get_spectra_plots(spectra, lambdaArray, name)
             get_intensity_plots(spectra, lambdaArray, name)
+
+def get_average(dictionary):
+    """ Return the average value of all values in a dictionary of arrays. """
+    sumOfValues = 0
+    nrOfValues = 0
+    for key in dictionary:
+        for value in dictionary[key]:
+            sumOfValues += value
+            nrOfValues += 1
+    return sumOfValues / nrOfValues
+    
             
+def print_duploNames(newData):
+    for setupNumber in newData:
+        for duploName in newData[setupNumber]:
+            print(f"setup number {setupNumber}, duplo name: {duploName}")
+
 def print_columnNames(data):
     for setupNumber in data:
         for columnName in data[setupNumber]:
