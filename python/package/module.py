@@ -171,26 +171,24 @@ def get_spectra_plots(spectraDictionary, lambdaArray, name):
             plt.savefig(f"../plots/{name}/{columnName}.png") 
             plt.clf()
             
-def get_intensity(spectrum, lambdaArray):
-    """ Integrating over the 589 nm peak of the sodium vapor lamp. Integrating
-        from 580 to 600 """
-    # lowerBoundIndex = np.where(lambdaArray > 580)[0][0]  # first select x values, the first index where lambda is bigger then 580
-    # upperBoundIndex = np.where(lambdaArray > 600)[0][0]  # dito
-    # intensity = spectrum[lowerBoundIndex:upperBoundIndex].sum()
-    # return intensity
-    return spectrum.sum()
+def get_intensities(spectraDictionary):
+    intensities = []
+    for spectrumNameOrNumber in spectraDictionary:
+        if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"): # just in case
+            intensity = spectraDictionary[spectrumNameOrNumber].sum()
+            intensities.append(intensity)
+            
+    return intensities
+
     
     
 def get_intensity_plot(spectraDictionary, lambdaArray, dictionaryName):
     print_dbg(PROGRES, f"getting intensities       for {dictionaryName}...")
-    intensities = []
-    for spectrumNameOrNumber in spectraDictionary:
-        if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"):
-            intensity = get_intensity(spectraDictionary[spectrumNameOrNumber], lambdaArray)
-            intensities.append(intensity)
-    plt.plot(range(len(intensities)), intensities, label=spectrumNameOrNumber)
+    
+    intensities = get_intensities(spectraDictionary)
+    
+    plt.plot(range(len(intensities)), intensities)
     plt.title(f"Intensity vs run")
-    # plt.xlim(580, 600)
     plt.xlabel(f"run number")
     plt.ylabel(f"intensity")
     make_directory(f"../plots/intensities")

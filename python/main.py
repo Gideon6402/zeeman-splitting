@@ -41,14 +41,11 @@ def main():
     noSaltIntensities = [spectrum.sum() for spectrum in noSaltSpectra]
     averageIntensity = sum(noSaltIntensities) / len(noSaltIntensities)
     print(f"Average intensity of sodium vapor lamp and flame: {averageIntensity:.4g}")
-
+    
     for name in sodiumNames:
-        plt.plot(lambdaArray, newData[5][name], label=name)
+        intensities = get_intensities(newData[5][name])
+        plt.plot(range(len(intensities), intensities), label=name)
     
-    for name in sodiumWithMagnetNames:
-        plt.plot(lambdaArray, newData[6][name], label=name)
-    
-    # for name
     
     
         
