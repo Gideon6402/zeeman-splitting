@@ -252,7 +252,7 @@ def print_average_intensity_lamp_and_flame(newData):
     print(f"Average intensity of sodium vapor lamp and flame: {averageIntensity:.4g}")
     return averageIntensity
 
-   
+@staticmethod 
 def plot_experiment(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
                     newData, duploNameList, setupNumber):  
     

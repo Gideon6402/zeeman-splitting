@@ -14,6 +14,7 @@ data = acquire_data()
 # into newData[setupNumber]["secondRun"]
 newData = separate_duplos(data)
 
+
 lambdaArray = data[1]["λ"] # lambda is found all over the place but they
                             # should all be the same
                             # debug: maybe remove
