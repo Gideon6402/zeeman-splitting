@@ -22,7 +22,7 @@ def _process_file(data, file, setupNumber):
     line = file.readline()                   # first columnname                
     while (True):                            # iterate over the columns
         columnName = line[:-1]               # cut of the '\n' at the end of the line                  
-        if (columnName == ""):               # check end of file (debug lamda)
+        if (columnName == ""):               # check end of file, readline() returns "" at end of file
             break 
                                              # add new column to data
         data[setupNumber][columnName] = np.zeros(4_098) # for some weird reason, 4_096 is not enough
@@ -31,10 +31,10 @@ def _process_file(data, file, setupNumber):
             line = file.readline()    
             try:                             # try to convert into float
                 value = float(line)
+                data[setupNumber][columnName][lineNr] = value   # add value to data       
                 lineNr += 1
             except:                   
                 break                        # line is non numeric => line is column name
-            data[setupNumber][columnName][lineNr] = value   # add value to data       
 # process could fastened by deleting variable columnName
          
 def acquire_data():
@@ -170,13 +170,13 @@ def plot_experiment(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
     sodiumWithMagnet = ["SodiumWithMagnetic", "Two", "Three"]
     mercury = ["fireWithSodium", "two", "third"]
     
-    for setupNumber, experiment in [(5, sodium),
-                                    (6, sodiumWithMagnet), 
-                                    (9, mercury)]:
+    for setupNumber, runNames in [(5, sodium),
+                                  (6, sodiumWithMagnet), 
+                                  (9, mercury)]:
         plt.figure(figsize=(8, 6))
-        for run in experiment:
-            intensities = get_intensities(newData[setupNumber][run])
-            plt.plot(intensities, label=run, linestyle='-', marker = 'x', linewidth=0.5)
+        for runName in runNames:
+            intensities = get_intensities(newData[setupNumber][runName])
+            plt.plot(intensities, label=runName, linestyle='-', marker = 'x', linewidth=0.5)
         plt.axhline(background, label="background", color="red")
         plt.axhline(fireLight, label="fire only", color="purple")
         plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and fire together", color="brown")
@@ -184,7 +184,7 @@ def plot_experiment(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
         plt.title("intensity vs run number for all three triplo runs")
         plt.xlabel("run number")
         plt.ylabel(f"intensity (unknown unit)")
-        plt.ylim(0, max(intensities)*1.1)
+        plt.ylim(bottom=0)
         plt.legend()
         make_directory("../report-plots")
         plt.savefig(f"../report-plots/{setupNumber}: intensity vs run.png")

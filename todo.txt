@@ -7,3 +7,4 @@ trim last zeros from spectra arrays (not necessary it is fast enough)
 substract background
 do not import private functions
 error analysis
+plot spectra of all the sources
