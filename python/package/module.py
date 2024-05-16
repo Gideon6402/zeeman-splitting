@@ -137,7 +137,7 @@ def get_average(dictionary):
         intensity = dictionary[spectrumName].sum()
         sumOfIntensities += intensity
         nrOfSpectra += 1
-    return sumOfIntensities
+    return sumOfIntensities / nrOfSpectra
     
 def get_sodiumLampAndFlameLight(newData):
     """ We want to see whether adding salt to the flame cast a shadow. The first
@@ -162,33 +162,77 @@ def get_intensities(spectraDictionary):
         if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"): # just in case
             intensity = spectraDictionary[spectrumNameOrNumber].sum()
             intensities.append(intensity)
-    return intensities        
+    return intensities   
 
-def plot_experiment(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
+def fix_layout():
+    plt.xlabel("run number")
+    plt.ylabel(f"intensity (unknown unit)")
+    plt.ylim(bottom=0)
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.tight_layout()
+    plt.subplots_adjust(right=0.7) 
+
+def plot_sodium(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
                     newData):  
-    sodium = ["SoFlameWithSlit", "SoFlameWithSlitTwo", "SoFlameWithSlitThree"]
-    sodiumWithMagnet = ["SodiumWithMagnetic", "Two", "Three"]
-    mercury = ["fireWithSodium", "two", "third"]
+    runNames = [("SoFlameWithSlit", "run 1"), ("SoFlameWithSlitTwo", "run 2"), ("SoFlameWithSlitThree", "run 3")]
     
-    for setupNumber, runNames in [(5, sodium),
-                                  (6, sodiumWithMagnet), 
-                                  (9, mercury)]:
-        plt.figure(figsize=(8, 6))
-        for runName in runNames:
-            intensities = get_intensities(newData[setupNumber][runName])
-            plt.plot(intensities, label=runName, linestyle='-', marker = 'x', linewidth=0.5)
-        plt.axhline(background, label="background", color="red")
-        plt.axhline(fireLight, label="fire only", color="purple")
-        plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and fire together", color="brown")
+    plt.figure(figsize=(10, 6))
+    for runName, label in runNames:
+        intensities = get_intensities(newData[5][runName])
+        plt.plot(intensities, label=label, linestyle='-', marker = 'x', linewidth=0.5)
+    FireAndSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
+    
+    plt.plot(FireAndSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
+    plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and flame", color="brown")
+    plt.axhline(background, label="background", color="pink")
+    plt.axhline(fireLight, label="flame", color="purple")
+    
+    fix_layout()
+    make_directory("../report-plots")
+    plt.savefig(f"../report-plots/5: intensity vs run.png")
+    plt.clf()
+    
+    
+def plot_magnet(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
+                    newData):  
+    runNames = ["SodiumWithMagnetic", "Two", "Three"]
+    
+    plt.figure(figsize=(10, 6))
+    for index, runName in enumerate(runNames):
+        intensities = get_intensities(newData[6][runName])
+        plt.plot(intensities, label=f"run {index + 1}", linestyle='-', marker = 'x', linewidth=0.5)
         
-        plt.title("intensity vs run number for all three triplo runs")
-        plt.xlabel("run number")
-        plt.ylabel(f"intensity (unknown unit)")
-        plt.ylim(bottom=0)
-        plt.legend()
-        make_directory("../report-plots")
-        plt.savefig(f"../report-plots/{setupNumber}: intensity vs run.png")
-        plt.clf()
+    FireAndSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
+    plt.plot(FireAndSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
+    
+    plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and flame", color="brown")
+    plt.axhline(background, label="background", color="pink")
+    plt.axhline(fireLight, label="flame", color="purple")
+    
+    fix_layout()
+    make_directory("../report-plots")
+    plt.savefig(f"../report-plots/6: intensity vs run.png")
+    plt.clf()
+    
+def plot_mercury(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
+                    newData):  
+    runNames = ["fireWithSodium", "two", "third"]
+    
+    plt.figure(figsize=(10, 6))
+    for index, runName in enumerate(runNames):
+        intensities = get_intensities(newData[9][runName])
+        plt.plot(intensities, label=f"run {index + 1}", linestyle='-', marker = 'x', linewidth=0.5)
+        
+    FireAndSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
+    plt.plot(FireAndSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
+    
+    plt.axhline(background, label="background", color="pink")
+    plt.axhline(fireLight, label="flame", color="purple")
+    
+    fix_layout()
+    make_directory("../report-plots")
+    plt.savefig(f"../report-plots/9: intensity vs run.png")
+    plt.clf()
 
 ## Functions to inspect data:
 def get_spectra_plot(spectraDictionary, lamdaArray, name):

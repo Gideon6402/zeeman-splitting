@@ -3,9 +3,7 @@
 from package import *
 
 data = acquire_data()
-newData = separate_duplos(data)
+newData = separate_runs(data)
 # print_columnNames(newData)
-lambdaArray = data[1]["λ"] # lambda is found all over the place but they
-                            # should all be the same
                             
-get_new_plots(data, newData)
+process_newData(data, newData)

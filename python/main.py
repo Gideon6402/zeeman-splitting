@@ -34,8 +34,12 @@ def main():
     
 
     # Let's plot:
-    plot_experiment(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
-                    newData)
+    plot_sodium(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
+                newData)
+    plot_magnet(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
+                newData)
+    plot_mercury(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
+                 newData)
     
 if __name__ == "__main__":
     main()
