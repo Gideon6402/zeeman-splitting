@@ -38,32 +38,6 @@ def _process_file(data, file, setupNumber):
 # process could fastened by deleting variable columnName
          
 def read_data():
-    """
-    Reads data from a series of text files named by number ("1.txt", "2.txt", etc.) in the "../processed-data/" directory.
-    Each file is expected to contain multiple sections, each starting with a single line denoting a column name,
-    followed by 4096 lines of numerical data. This function reads the first file ("1.txt") and stores the data
-    in a dictionary.
-
-    The function is currently configured to only read from "1.txt" for demonstration purposes.
-
-    Returns:
-        dict: A nested dictionary where each key is the file name and its value is another dictionary. This nested
-              dictionary's keys are the column names found in the file, and its values are numpy arrays of floats
-              containing the data from the file.
-
-    Raises:
-        IOError: If there is an issue opening or reading the files.
-        ValueError: If the data conversion to float fails.
-
-    Example:
-        data = acquire_data()
-        print(data['1.txt']['SomeColumnName'])  # prints numpy array of data for 'SomeColumnName' in '1.txt'
-    
-    Notes:
-        - The function assumes that each data section in the file has exactly 4096 numerical entries.
-        - The function currently does not handle cases where files or expected data formats are missing or incorrect.
-        - Debug statements (print) are included and may be removed or commented out in production use.
-    """
     data = {}                             
     for setupNumber in [1, 2, 3, 5, 6, 9, 11]: 
         data[setupNumber] = {}                 # add set-up dict to data
@@ -166,9 +140,9 @@ def get_intensities(spectraDictionary):
 
 def fix_layout():
     plt.xlabel("run number")
-    plt.ylabel(f"intensity (unknown unit)")
+    plt.ylabel("intensity (unknown unit)")
     plt.ylim(bottom=0)
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
     plt.subplots_adjust(right=0.7) 
 
@@ -180,16 +154,17 @@ def plot_sodium(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
     for runName, label in runNames:
         intensities = get_intensities(newData[5][runName])
         plt.plot(intensities, label=label, linestyle='-', marker = 'x', linewidth=0.5)
-    FireAndSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
+    fireWithSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
     
-    plt.plot(FireAndSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
+    plt.plot(fireWithSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
     plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and flame", color="brown")
     plt.axhline(background, label="background", color="pink")
     plt.axhline(fireLight, label="flame", color="purple")
+    plt.axhline(sodiumLight, label="lamp", color="brown")
     
     fix_layout()
     make_directory("../report-plots")
-    plt.savefig(f"../report-plots/5: intensity vs run.png")
+    plt.savefig("../report-plots/5: intensity vs run.png")
     plt.clf()
     
     
@@ -202,20 +177,20 @@ def plot_magnet(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
         intensities = get_intensities(newData[6][runName])
         plt.plot(intensities, label=f"run {index + 1}", linestyle='-', marker = 'x', linewidth=0.5)
         
-    FireAndSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
-    plt.plot(FireAndSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
+    fireWithSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
+    plt.plot(fireWithSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
     
     plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and flame", color="brown")
     plt.axhline(background, label="background", color="pink")
     plt.axhline(fireLight, label="flame", color="purple")
+    plt.axhline(sodiumLight, label="lamp", color="brown")
     
     fix_layout()
     make_directory("../report-plots")
     plt.savefig(f"../report-plots/6: intensity vs run.png")
     plt.clf()
     
-def plot_mercury(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
-                    newData):  
+def plot_mercury(background, fireLight, newData):  
     runNames = ["fireWithSodium", "two", "third"]
     
     plt.figure(figsize=(10, 6))
@@ -223,8 +198,8 @@ def plot_mercury(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
         intensities = get_intensities(newData[9][runName])
         plt.plot(intensities, label=f"run {index + 1}", linestyle='-', marker = 'x', linewidth=0.5)
         
-    FireAndSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
-    plt.plot(FireAndSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
+    fireWithSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
+    plt.plot(fireWithSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
     
     plt.axhline(background, label="background", color="pink")
     plt.axhline(fireLight, label="flame", color="purple")

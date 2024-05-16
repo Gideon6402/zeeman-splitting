@@ -31,15 +31,14 @@ def main():
     print(f"Average intensity from sodium vapor lamp: {sodiumLight:.4g}")
 
     sodiumLampAndFlameLight = get_sodiumLampAndFlameLight(newData)
-    
+        
 
     # Let's plot:
     plot_sodium(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
                 newData)
     plot_magnet(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
                 newData)
-    plot_mercury(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
-                 newData)
+    plot_mercury(background, fireLight, newData)
     
 if __name__ == "__main__":
     main()
