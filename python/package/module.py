@@ -1,13 +1,13 @@
-# from .private import _process_file
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+## contstants
+LAMBDA_MAX = 894.837
 
+## Printing options
 PROGRES = 1
 IGNORE = 2
-LAMBDA_MAX = 894.837
-# Y_LIM = 8
 debugList = [IGNORE]
 
 def print_dbg(identifier, *args, **kwargs):
@@ -15,9 +15,9 @@ def print_dbg(identifier, *args, **kwargs):
     if identifier in debugList:
         print(*args, **kwargs)
         
-def avarage(list):
-    return sum(list) / len(list)
 
+
+## data acquisition
 def _process_file(data, file, setupNumber):
     line = file.readline()                   # first columnname                
     while (True):                            # iterate over the columns
@@ -34,11 +34,9 @@ def _process_file(data, file, setupNumber):
                 lineNr += 1
             except:                   
                 break                        # line is non numeric => line is column name
-            data[setupNumber][columnName][lineNr] = value   # add value to data
-            
+            data[setupNumber][columnName][lineNr] = value   # add value to data       
 # process could fastened by deleting variable columnName
-
-            
+         
 def acquire_data():
     """
     Reads data from a series of text files named by number ("1.txt", "2.txt", etc.) in the "../processed-data/" directory.
@@ -71,27 +69,11 @@ def acquire_data():
         data[setupNumber] = {}                 # add set-up dict to data
         with open("../processed-data/" + str(setupNumber) + ".txt") as file:
             _process_file(data, file, setupNumber)
-            
-    # separate_duplos(data)
     
-    return data
-            
-                
+    return data                 
 # debug: don't forget to update the docstring
 
-### structure:
-# data[setupNumber][columnName][lineNr]
 
-# where:
-# data: one variable to contain all the data of the experiment
-# data[setupNumber]: dictionary with:
-#                  - keys:     name of spectrum (like background_1)
-#                  - values:   numpy array of the spectrum
-#                                  last key contains numpy array of the wavelengths
-# lineNr: nth entry of the spectrum   
-
-from .module import *
- 
 def get_duploName_and_Number(columnName):
     if ("background" in columnName):
         duploName, duploNumber, _ = columnName.split("_")
@@ -102,7 +84,6 @@ def get_duploName_and_Number(columnName):
     duploNumber = int(duploNumber)
     return duploName, duploNumber
     
-
 def create_duploName_dictionaries(data, newData, setupNumber):
     newData[setupNumber] = {}
     for columnName in data[setupNumber]:
@@ -114,7 +95,6 @@ def create_duploName_dictionaries(data, newData, setupNumber):
                 print_dbg(IGNORE, f"Ignoring {setupNumber}: {columnName}")
 # Yes we are assigning dictionaries a lot of times but this process doesn't take long anyway
                 
-
 def fill_duploName_dictionaries(data, newData, setupNumber):
     for columnName in list(data[setupNumber]):
         if "λ" not in columnName:
@@ -125,21 +105,92 @@ def fill_duploName_dictionaries(data, newData, setupNumber):
                 # already printed that we are ignoring this one
                 continue
                 
-
-def separate_duplos(data):
+def separate_runs(data):
     newData = {}
     for setupNumber in data:
         create_duploName_dictionaries(data, newData, setupNumber)
         fill_duploName_dictionaries(data, newData, setupNumber)
-
     return newData
 
 
 
+## utility funcitons
 def make_directory(filename):
     if not os.path.isdir(filename):
         os.system(f"mkdir {filename}")
 
+def print_duploNames(newData):
+    for setupNumber in newData:
+        for duploName in newData[setupNumber]:
+            print(f"setup number {setupNumber}, duplo name: {duploName}")
+
+def print_columnNames(data):
+    for setupNumber in data:
+        for columnName in data[setupNumber]:
+            print(f"setup number {setupNumber}, column name: {columnName}")
+
+def get_average(dictionary):
+    """ Return the average intensity of all spectra in a dictionary """
+    sumOfIntensities = 0
+    nrOfSpectra = 0
+    for spectrumName in dictionary:
+        intensity = dictionary[spectrumName].sum()
+        sumOfIntensities += intensity
+        nrOfSpectra += 1
+    return sumOfIntensities
+    
+def get_sodiumLampAndFlameLight(newData):
+    """ We want to see whether adding salt to the flame cast a shadow. The first
+    measurement always was without salt. Let's get the average of those: """
+    noSaltSpectra = np.array([newData[5]["SoFlameWithSlit"][1],
+                              newData[5]["SoFlameWithSlitTwo"][1],
+                              newData[5]["SoFlameWithSlitThree"][1],
+                              newData[6]["SodiumWithMagnetic"][1],
+                              newData[6]["Two"][1],
+                              newData[6]["Three"][1]])
+    
+    
+    noSaltIntensities = [spectrum.sum() for spectrum in noSaltSpectra]
+    averageIntensity = sum(noSaltIntensities) / len(noSaltIntensities)
+    return averageIntensity    
+        
+                  
+## plotting the data     
+def get_intensities(spectraDictionary):
+    intensities = []
+    for spectrumNameOrNumber in spectraDictionary:
+        if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"): # just in case
+            intensity = spectraDictionary[spectrumNameOrNumber].sum()
+            intensities.append(intensity)
+    return intensities        
+
+def plot_experiment(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
+                    newData):  
+    sodium = ["SoFlameWithSlit", "SoFlameWithSlitTwo", "SoFlameWithSlitThree"]
+    sodiumWithMagnet = ["SodiumWithMagnetic", "Two", "Three"]
+    mercury = ["fireWithSodium", "two", "third"]
+    
+    for setupNumber, experiment in [(5, sodium),
+                                    (6, sodiumWithMagnet), 
+                                    (9, mercury)]:
+        plt.figure(figsize=(8, 6))
+        for run in experiment:
+            intensities = get_intensities(newData[setupNumber][run])
+            plt.plot(intensities, label=run, linestyle='-', marker = 'x', linewidth=0.5)
+        plt.axhline(background, label="background", color="red")
+        plt.axhline(fireLight, label="fire only", color="purple")
+        plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and fire together", color="brown")
+        
+        plt.title("intensity vs run number for all three triplo runs")
+        plt.xlabel("run number")
+        plt.ylabel(f"intensity (unknown unit)")
+        plt.ylim(0, max(intensities)*1.1)
+        plt.legend()
+        make_directory("../report-plots")
+        plt.savefig(f"../report-plots/{setupNumber}: intensity vs run.png")
+        plt.clf()
+
+## Functions to inspect data:
 def get_spectra_plot(spectraDictionary, lamdaArray, name):
     print_dbg(1, f"getting  spectra plots    for {name}...")
     plt.title(f"{name}")
@@ -170,18 +221,7 @@ def get_spectra_plots(spectraDictionary, lambdaArray, name):
             make_directory(f"../plots/{name}")
             plt.savefig(f"../plots/{name}/{columnName}.png") 
             plt.clf()
-            
-def get_intensities(spectraDictionary):
-    intensities = []
-    for spectrumNameOrNumber in spectraDictionary:
-        if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"): # just in case
-            intensity = spectraDictionary[spectrumNameOrNumber].sum()
-            intensities.append(intensity)
-            
-    return intensities
-
-    
-    
+        
 def get_intensity_plot(spectraDictionary, lambdaArray, dictionaryName):
     print_dbg(PROGRES, f"getting intensities       for {dictionaryName}...")
     
@@ -194,17 +234,14 @@ def get_intensity_plot(spectraDictionary, lambdaArray, dictionaryName):
     make_directory(f"../plots/intensities")
     plt.savefig(f"../plots/intensities/{dictionaryName}.png")
     plt.clf() #clear figure
-    
-# def plot_intensities():
-    
 
-def get_plots(data):
+def process_data(data):
     for setupNumber in data:
         get_spectra_plot(data[setupNumber], setupNumber)
         get_spectra_plots(data[setupNumber], setupNumber)
         get_intensity_plot(data[setupNumber], setupNumber)
-        
-def get_new_plots(data, newData):
+
+def process_newData(data, newData):
     lambdaArray = data[1]["λ"] # lambda is found all over the place but they should all be the same
     for setupNumber in newData:
         for duploName in newData[setupNumber]:
@@ -213,76 +250,25 @@ def get_new_plots(data, newData):
             get_spectra_plot(spectra, lambdaArray, name)
             get_spectra_plots(spectra, lambdaArray, name)
             get_intensity_plot(spectra, lambdaArray, name)
-
-def get_average(dictionary):
-    """ Return the average intensity of all spectra in a dictionary """
-    sumOfIntensities = 0
-    nrOfSpectra = 0
-    for spectrumName in dictionary:
-        intensity = dictionary[spectrumName].sum()
-        sumOfIntensities += intensity
-        nrOfSpectra += 1
         
-    return sumOfIntensities / nrOfSpectra
-    
-            
-def print_duploNames(newData):
-    for setupNumber in newData:
-        for duploName in newData[setupNumber]:
-            print(f"setup number {setupNumber}, duplo name: {duploName}")
-
-def print_columnNames(data):
-    for setupNumber in data:
-        for columnName in data[setupNumber]:
-            print(f"setup number {setupNumber}, column name: {columnName}")
-            
-def print_average_intensity_lamp_and_flame(newData):
-    """ We want to see whether adding salt to the flame cast a shadow. The first
-    measurement always was without salt. Let's get the average of those """
-    noSaltSpectra = np.array([newData[5]["SoFlameWithSlit"][1],
-                              newData[5]["SoFlameWithSlitTwo"][1],
-                              newData[5]["SoFlameWithSlitThree"][1],
-                              newData[6]["SodiumWithMagnetic"][1],
-                              newData[6]["Two"][1],
-                              newData[6]["Three"][1]])
-    
-    
-    noSaltIntensities = [spectrum.sum() for spectrum in noSaltSpectra]
-    averageIntensity = sum(noSaltIntensities) / len(noSaltIntensities)
-    print(f"Average intensity of sodium vapor lamp and flame: {averageIntensity:.4g}")
-    return averageIntensity
-
-@staticmethod 
-def plot_experiment(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
-                    newData, duploNameList, setupNumber):  
-    
-    plt.figure(figsize=(8, 6))
-    for name in duploNameList:
-        intensities = get_intensities(newData[setupNumber][name])
-        plt.plot(intensities, label=name, linestyle='-', marker = 'x', linewidth=0.5)
-    plt.axhline(background, label="background", color="red")
-    plt.axhline(fireLight, label="fire only", color="purple")
-    plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and fire together", color="brown")
-    
-    plt.title("intensity vs run number for all three triplo runs")
-    plt.xlabel("run number")
-    plt.ylabel(f"intensity (unknown unit)")
-    plt.ylim(0, max(intensities)*1.1)
-    plt.legend()
-    make_directory("../report-plots")
-    plt.savefig(f"../report-plots/{setupNumber}: intensity vs run.png")
-    plt.clf()
-
-    
-        
-        
+      
 # debug: would be more beautiful to only go once through all setupNumbers
-# debug: would be better to change setupNumber into setupNumber
 # debug: lambda is getting overwritten a lot of times
 # debug: check whether a lambda column are the same
-# debug: newData has a lot of empty entries, shouldn't cause to big of a problem
 # debug: creating a data class would have been better
-# debug: figure out whether y values are intensity or counts
+# debug: figure out whether y values are intensity or counts IMPORTANT
 # debug: we could remove the setupNumber of newData
 
-                  
+
+## structure:
+# data[setupNumber][columnName][wavelengthIndex]
+
+# where:
+# data: one variable to contain all the data of the experiment
+# data[setupNumber]: dictionary with:
+#                  - keys:     name of spectrum (like background_1)
+#                  - values:   numpy array of the spectrum
+#                                  last key contains numpy array of the wavelengths
+# lineNr: nth entry of the spectrum  
+
+# newData[setupNumber][duploName][duploNumber][wavelengthIndex]
