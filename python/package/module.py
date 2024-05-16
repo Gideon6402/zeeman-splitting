@@ -37,7 +37,7 @@ def _process_file(data, file, setupNumber):
                 break                        # line is non numeric => line is column name
 # process could fastened by deleting variable columnName
          
-def acquire_data():
+def read_data():
     """
     Reads data from a series of text files named by number ("1.txt", "2.txt", etc.) in the "../processed-data/" directory.
     Each file is expected to contain multiple sections, each starting with a single line denoting a column name,
@@ -122,12 +122,12 @@ def make_directory(filename):
 def print_duploNames(newData):
     for setupNumber in newData:
         for duploName in newData[setupNumber]:
-            print(f"setup number {setupNumber}, duplo name: {duploName}")
+            print(f"{setupNumber}, {duploName}")
 
 def print_columnNames(data):
     for setupNumber in data:
         for columnName in data[setupNumber]:
-            print(f"setup number {setupNumber}, column name: {columnName}")
+            print(f"{setupNumber}, {columnName}")
 
 def get_average(dictionary):
     """ Return the average intensity of all spectra in a dictionary """
@@ -195,7 +195,7 @@ def plot_sodium(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
     
 def plot_magnet(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
                     newData):  
-    runNames = ["SodiumWithMagnetic", "Two", "Three"]
+    runNames = ["One", "Two", "Three"]
     
     plt.figure(figsize=(10, 6))
     for index, runName in enumerate(runNames):

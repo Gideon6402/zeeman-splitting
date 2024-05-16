@@ -6,7 +6,7 @@ def main():
     # structure: data[setup number][column name][frequency index]
     # e.g. data[1]["background-1"][1] would be the value of the lowest frequency
     # of the first background measurement that is stored in 1.lab
-    data = acquire_data()
+    data = read_data()
                             
     # due to the nature of the data, there is no distinction between e.g.
     # firstRun-1 and secondRun-2. This function bundels all spectra with the 

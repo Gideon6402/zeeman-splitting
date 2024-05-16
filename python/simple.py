@@ -3,7 +3,7 @@
 from package import *
 
 def main():
-    data = acquire_data()
+    data = read_data()
     newData = separate_runs(data)
     background = get_average(newData[1]["background"])
     fireLight = get_average(newData[2]["fireOnly"])

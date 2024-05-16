@@ -8,3 +8,6 @@ substract background
 do not import private functions
 error analysis
 plot spectra of all the sources
+fix legend names
+max plot_experiment more efficient
+Change intensity to count
