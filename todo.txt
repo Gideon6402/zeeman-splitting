@@ -6,3 +6,4 @@ explore data structure: print all names
 trim last zeros from spectra arrays (not necessary it is fast enough)
 substract background
 do not import private functions
+error analysis
