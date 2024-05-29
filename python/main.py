@@ -33,7 +33,7 @@ def main():
     sodiumLampAndFlameLight = get_sodiumLampAndFlameLight(newData)
         
 
-    # Let's plot:
+    # Plot count vs time with background sources as horizontal lines
     plot_sodium(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
                 newData)
     plot_magnet(background, fireLight, sodiumLight, sodiumLampAndFlameLight,

@@ -1,13 +1,9 @@
-Plot all diagram in a nice matplotlib frame
-Acces more then the first measurement
-Comment the c++ code
-comment the python code
-explore data structure: print all names
-trim last zeros from spectra arrays (not necessary it is fast enough)
-substract background
-do not import private functions
-error analysis
-plot spectra of all the sources
-fix legend names
-max plot_experiment more efficient
-Change intensity to count
+comment the python code - later
+error analysis - later
+Change intensity to count and normalize - later
+Improve experimental methods to clearly explain all the settings - later
+
+do not import private functions - nah
+Comment the c++ code - nah
+substract background - nah
+

@@ -21,20 +21,25 @@ def print_dbg(identifier, *args, **kwargs):
 def _process_file(data, file, setupNumber):
     line = file.readline()                   # first columnname                
     while (True):                            # iterate over the columns
-        columnName = line[:-1]               # cut of the '\n' at the end of the line                  
-        if (columnName == ""):               # check end of file, readline() returns "" at end of file
+        columnName = line[:-1]               # cut of the '\n' at the end of the
+                                             # line                  
+        if (columnName == ""):               # check end of file, readline()
+                                             # returns "" at end of file
             break 
                                              # add new column to data
-        data[setupNumber][columnName] = np.zeros(4_098) # for some weird reason, 4_096 is not enough
+        data[setupNumber][columnName] = np.zeros(4_098) # for some weird reason,
+                                                        # 4_096 is not enough
         lineNr = 0
-        while (True):                        # iterate till new column name is found
+        while (True):                        # iterate till new column name is
+                                             # found
             line = file.readline()    
             try:                             # try to convert into float
                 value = float(line)
-                data[setupNumber][columnName][lineNr] = value   # add value to data       
+                data[setupNumber][columnName][lineNr] = value   # add value to
+                                                                # data       
                 lineNr += 1
             except:                   
-                break                        # line is non numeric => line is column name
+                break           # line is non numeric => line is column name
 # process could fastened by deleting variable columnName
          
 def read_data():
@@ -67,7 +72,8 @@ def create_duploName_dictionaries(data, newData, setupNumber):
                 newData[setupNumber][duploName] = {}
             except Exception as e:
                 print_dbg(IGNORE, f"Ignoring {setupNumber}: {columnName}")
-# Yes we are assigning dictionaries a lot of times but this process doesn't take long anyway
+# Yes we are assigning dictionaries a lot of times but this process doesn't
+# take long anyway
                 
 def fill_duploName_dictionaries(data, newData, setupNumber):
     for columnName in list(data[setupNumber]):
@@ -132,15 +138,16 @@ def get_sodiumLampAndFlameLight(newData):
 ## plotting the data     
 def get_intensities(spectraDictionary):
     intensities = []
-    for spectrumNameOrNumber in spectraDictionary:
-        if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"): # just in case
+    for spectrumNameOrNumber in spectraDictionary: 
+                                                               # just in case
+        if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"): 
             intensity = spectraDictionary[spectrumNameOrNumber].sum()
             intensities.append(intensity)
     return intensities   
 
 def fix_layout():
     plt.xlabel("run number")
-    plt.ylabel("intensity (unknown unit)")
+    plt.ylabel("count (unkown scale)")
     plt.ylim(bottom=0)
     plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
@@ -148,18 +155,23 @@ def fix_layout():
 
 def plot_sodium(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
                     newData):  
-    runNames = [("SoFlameWithSlit", "run 1"), ("SoFlameWithSlitTwo", "run 2"), ("SoFlameWithSlitThree", "run 3")]
+    runNames = [("SoFlameWithSlit", "run 1"),
+                ("SoFlameWithSlitTwo", "run 2"),
+                ("SoFlameWithSlitThree", "run 3")]
     
     plt.figure(figsize=(10, 6))
     for runName, label in runNames:
         intensities = get_intensities(newData[5][runName])
-        plt.plot(intensities, label=label, linestyle='-', marker = 'x', linewidth=0.5)
+        plt.plot(intensities, label=label, linestyle='-', marker = 'x',
+                 linewidth=0.5)
     fireWithSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
     
-    plt.plot(fireWithSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
-    plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and flame", color="brown")
+    plt.plot(fireWithSaltIntensities, label="flame with salt", linestyle='-',
+             marker = 'x', linewidth=0.5)
+    plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and flame",
+                color="purple")
     plt.axhline(background, label="background", color="pink")
-    plt.axhline(fireLight, label="flame", color="purple")
+    plt.axhline(fireLight, label="flame", color="grey")
     plt.axhline(sodiumLight, label="lamp", color="brown")
     
     fix_layout()
@@ -175,14 +187,17 @@ def plot_magnet(background, fireLight, sodiumLight, sodiumLampAndFlameLight,
     plt.figure(figsize=(10, 6))
     for index, runName in enumerate(runNames):
         intensities = get_intensities(newData[6][runName])
-        plt.plot(intensities, label=f"run {index + 1}", linestyle='-', marker = 'x', linewidth=0.5)
+        plt.plot(intensities, label=f"run {index + 1}", linestyle='-',
+                 marker = 'x', linewidth=0.5)
         
     fireWithSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
-    plt.plot(fireWithSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
+    plt.plot(fireWithSaltIntensities, label="flame with salt", linestyle='-',
+             marker = 'x', linewidth=0.5)
     
-    plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and flame", color="brown")
+    plt.axhline(sodiumLampAndFlameLight, label="sodium lamp and flame",
+                color="purple")
     plt.axhline(background, label="background", color="pink")
-    plt.axhline(fireLight, label="flame", color="purple")
+    plt.axhline(fireLight, label="flame", color="grey")
     plt.axhline(sodiumLight, label="lamp", color="brown")
     
     fix_layout()
@@ -196,10 +211,12 @@ def plot_mercury(background, fireLight, newData):
     plt.figure(figsize=(10, 6))
     for index, runName in enumerate(runNames):
         intensities = get_intensities(newData[9][runName])
-        plt.plot(intensities, label=f"run {index + 1}", linestyle='-', marker = 'x', linewidth=0.5)
+        plt.plot(intensities, label=f"run {index + 1}", linestyle='-',
+                 marker = 'x', linewidth=0.5)
         
     fireWithSaltIntensities = get_intensities(newData[11]["fireWithSodium"])
-    plt.plot(fireWithSaltIntensities, label="flame with salt", linestyle='-', marker = 'x', linewidth=0.5)
+    plt.plot(fireWithSaltIntensities, label="flame with salt", linestyle='-',
+             marker = 'x', linewidth=0.5)
     
     plt.axhline(background, label="background", color="pink")
     plt.axhline(fireLight, label="flame", color="purple")
@@ -241,17 +258,19 @@ def get_spectra_plots(spectraDictionary, lambdaArray, name):
             plt.savefig(f"../plots/{name}/{columnName}.png") 
             plt.clf()
         
-def get_intensity_plot(spectraDictionary, lambdaArray, dictionaryName):
-    print_dbg(PROGRES, f"getting intensities       for {dictionaryName}...")
+def get_intensity_plot(spectraDictionary, label):
+    print_dbg(PROGRES, f"getting intensities       for {label}...")
     
     intensities = get_intensities(spectraDictionary)
     
-    plt.plot(range(len(intensities)), intensities)
+    plt.plot(intensities, linestyle='-',
+             marker = 'x', linewidth=0.5)
     plt.title(f"Intensity vs run")
     plt.xlabel(f"run number")
     plt.ylabel(f"intensity")
     make_directory(f"../plots/intensities")
-    plt.savefig(f"../plots/intensities/{dictionaryName}.png")
+    plt.savefig(f"../plots/intensities/{label}.png")
+    plt.show()
     plt.clf() #clear figure
 
 def process_data(data):
@@ -261,7 +280,8 @@ def process_data(data):
         get_intensity_plot(data[setupNumber], setupNumber)
 
 def process_newData(data, newData):
-    lambdaArray = data[1]["λ"] # lambda is found all over the place but they should all be the same
+    lambdaArray = data[1]["λ"] # lambda is found all over the place but they
+                               # should all be the same
     for setupNumber in newData:
         for duploName in newData[setupNumber]:
             spectra = newData[setupNumber][duploName]
@@ -287,7 +307,7 @@ def process_newData(data, newData):
 # data[setupNumber]: dictionary with:
 #                  - keys:     name of spectrum (like background_1)
 #                  - values:   numpy array of the spectrum
-#                                  last key contains numpy array of the wavelengths
+#                              last key contains numpy array of the wavelengths
 # lineNr: nth entry of the spectrum  
 
 # newData[setupNumber][duploName][duploNumber][wavelengthIndex]
