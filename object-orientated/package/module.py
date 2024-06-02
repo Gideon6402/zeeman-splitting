@@ -155,24 +155,12 @@ class DataProcessor:
     ## plotting the data     
     @staticmethod
     def get_intensities(spectraDictionary):
-        try:
-            intensities = np.zeros(30) # At max 30 intensities per run
-            for spectrumNameOrNumber in spectraDictionary: 
-                try:
-                    index = int(spectrumNameOrNumber)
-                except Exception as e:
-                    print(e)
-                    print("spectrum dictionary does not have integers as key." +
-                          "contact the author (Gideon Wiersma, g.j.wiersma@student.rug.nl)")
-                                                                    # just in case
-                if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"): 
-                    intensity = spectraDictionary[spectrumNameOrNumber].sum()
-                    intensities[index] = intensity
-            return intensities   
-        except Exception as e:
-            print(e)
-            print("Error in hard coded function: contact the author (Gideon Wiersma," +
-                  "g.j.wiersma@student.rug.nl)")
+        intensities = np.zeros(max(spectraDictionary.keys()))
+        for spectrumNumber in spectraDictionary: 
+            index = int(spectrumNumber) - 1 #
+            intensity = spectraDictionary[spectrumNumber].sum()
+            intensities[index] = intensity 
+        return intensities   
     
     def get_backgrounds(self):
         # 10 spectra of the background were recorded and saved in a dictionary:
@@ -204,6 +192,12 @@ class DataProcessor:
         timeError = 1
         plt.errorbar(timeArray, intensities, intensityError, timeError,
                         label=label, **self.lineStyleKeywords)
+        
+    def plot_spectrum(self, setupNumber, name, index):
+        lambdaArray = self.data[1]["λ"]
+        intensityArray = self.newData[setupNumber][name][index]
+        plt.scatter(lambdaArray, intensityArray, **self.lineStyleKeywords)
+        plt.show()
 
     def plot_sodium(self):  
         runNames = [("SoFlameWithSlit", "triplo 1"),

@@ -17,7 +17,9 @@ def main():
     # into newData[setupNumber]["secondRun"]
     processor.separate_runs()  
 
-    processor.get_backgrounds()      
+    processor.get_backgrounds()  
+
+    processor.plot_spectrum(6, "One", 1)    
 
     # Plot count vs time with background sources as horizontal lines
     processor.plot_sodium()

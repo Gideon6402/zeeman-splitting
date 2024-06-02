@@ -2,9 +2,10 @@
 
 from package import *
 
-processor = DataProcessor() 
+processor = DataProcessor()
 processor.read_data()
-processor.separate_runs()
+processor.separate_runs()  
 
-processor.print_duploNames()
-# print_columnNames(data)
+# for setupNumber in processor.newData:
+#     for 
+
