@@ -18,8 +18,11 @@ class DataProcessor:
         self.fireLight = None
         self.sodiumLight = None
         self.sodiumLampAndFlameLight = None
-        self.lineStyleKeywords = {"linestyle":"", "marker":'.',
+        self.lineStyleKeywords = {"linestyle": "", "marker": '.',
                                    "linewidth": 0.5}
+        
+        # debug
+        self.noSaltIntensties = None
 
     @staticmethod
     def print_dbg(identifier, *args, **kwargs):
@@ -139,8 +142,12 @@ class DataProcessor:
                                   self.newData[6]["Two"][1],
                                   self.newData[6]["Three"][1]])
         
+        # index 1 might seem as mistake but index comes from number in column names
+        # and that one starts with 1
+        
         
         noSaltIntensities = [spectrum.sum() for spectrum in noSaltSpectra]
+        self.noSaltIntensties = noSaltIntensities # debug
         averageIntensity = sum(noSaltIntensities) / len(noSaltIntensities)
         return averageIntensity    
             
@@ -148,13 +155,24 @@ class DataProcessor:
     ## plotting the data     
     @staticmethod
     def get_intensities(spectraDictionary):
-        intensities = []
-        for spectrumNameOrNumber in spectraDictionary: 
-                                                                # just in case
-            if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"): 
-                intensity = spectraDictionary[spectrumNameOrNumber].sum()
-                intensities.append(intensity)
-        return intensities   
+        try:
+            intensities = np.zeros(30) # At max 30 intensities per run
+            for spectrumNameOrNumber in spectraDictionary: 
+                try:
+                    index = int(spectrumNameOrNumber)
+                except Exception as e:
+                    print(e)
+                    print("spectrum dictionary does not have integers as key." +
+                          "contact the author (Gideon Wiersma, g.j.wiersma@student.rug.nl)")
+                                                                    # just in case
+                if (spectrumNameOrNumber != "λ" and spectrumNameOrNumber != "Raw_E"): 
+                    intensity = spectraDictionary[spectrumNameOrNumber].sum()
+                    intensities[index] = intensity
+            return intensities   
+        except Exception as e:
+            print(e)
+            print("Error in hard coded function: contact the author (Gideon Wiersma," +
+                  "g.j.wiersma@student.rug.nl)")
     
     def get_backgrounds(self):
         # 10 spectra of the background were recorded and saved in a dictionary:
@@ -182,7 +200,7 @@ class DataProcessor:
 
     def plot(self, intensities, label):
         intensityError = 1e4
-        timeArray = 4 * np.arange(len(intensities))
+        timeArray = 4 * np.arange(len(intensities)) - 4
         timeError = 1
         plt.errorbar(timeArray, intensities, intensityError, timeError,
                         label=label, **self.lineStyleKeywords)
@@ -199,6 +217,7 @@ class DataProcessor:
 
         fireWithSaltIntensities = self.get_intensities(self.newData[11]["fireWithSodium"])
         self.plot(fireWithSaltIntensities, "flame with salt")
+        # self.plot(self.noSaltIntensties, "no salt (debug)")
         plt.axhline(self.sodiumLampAndFlameLight, label="sodium lamp and flame",
                     color="purple")
         plt.axhline(self.background, label="background", color="pink")
