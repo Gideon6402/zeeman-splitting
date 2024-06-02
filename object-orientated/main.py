@@ -19,7 +19,8 @@ def main():
 
     processor.get_backgrounds()  
 
-    processor.plot_spectrum(6, "One", 1)    
+    for i in range(15):
+        processor.plot_spectrum(6, "One", i + 1)    
 
     # Plot count vs time with background sources as horizontal lines
     processor.plot_sodium()

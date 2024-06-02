@@ -197,6 +197,8 @@ class DataProcessor:
         lambdaArray = self.data[1]["λ"]
         intensityArray = self.newData[setupNumber][name][index]
         plt.scatter(lambdaArray, intensityArray, **self.lineStyleKeywords)
+        plt.xlim(587, 592)
+        plt.ylim(0, 4000)
         plt.show()
 
     def plot_sodium(self):  
