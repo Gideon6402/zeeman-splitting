@@ -1,8 +1,9 @@
 #!/bin/python3
 
-from package import *
+from package import * # also imports the capital case ENUMS
 
 def main():
+    # plots are plotted in folder "report-plots" #
 
     processor = DataProcessor()
     # structure: data[setup number][column name][frequency index]
@@ -19,8 +20,16 @@ def main():
 
     processor.get_backgrounds()  
 
-    for i in range(15):
-        processor.plot_spectrum(6, "One", i + 1)    
+    # plot first spectrum where no salt was added to the fire yet for all
+    # three duplo runs
+    processor.plot_same_time_triplo_spectra(SODIUM, 1)
+    # plot 5th spectrum where the salt is blocking the light
+    processor.plot_same_time_triplo_spectra(SODIUM, 5)
+    for i in range(10):
+        processor.plot_spectrum(FIRE_ONLY, "fireOnly", i + 1)
+
+
+
 
     # Plot count vs time with background sources as horizontal lines
     processor.plot_sodium()

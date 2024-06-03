@@ -3,7 +3,12 @@ import numpy as np
 import os
 
 ## contstants
-LAMBDA_MAX = 894.837
+LAMBDA_MIN = 360.127 # minimal wavelength
+LAMBDA_MAX = 894.837 # maximal wavelength
+FIRE_ONLY = 2
+SODIUM = 5
+SODIUM_MAGNET = 6
+MERCURY = 9
 
 ## Printing options
 PROGRES = 1
@@ -20,7 +25,16 @@ class DataProcessor:
         self.sodiumLampAndFlameLight = None
         self.lineStyleKeywords = {"linestyle": "", "marker": '.',
                                    "linewidth": 0.5}
+        self.ylabel = "a.u. (related to count)"
         
+        self.triploNames = {}
+        self.triploNames[SODIUM] =  [
+            ("SoFlameWithSlit", "triplo 1"),
+            ("SoFlameWithSlitTwo", "triplo 2"),
+            ("SoFlameWithSlitThree", "triplo 3")
+        ]
+
+
         # debug
         self.noSaltIntensties = None
 
@@ -187,19 +201,45 @@ class DataProcessor:
         plt.subplots_adjust(right=0.7) 
 
     def plot(self, intensities, label):
+        """ Plot intensity vs time.
+        Intensity (np.array)
+        label (str)"""
         intensityError = 1e4
-        timeArray = 4 * np.arange(len(intensities)) - 4
+        timeArray = 4 * np.arange(len(intensities)) # measurement every 4 seconds
         timeError = 1
         plt.errorbar(timeArray, intensities, intensityError, timeError,
-                        label=label, **self.lineStyleKeywords)
+                     label=label, **self.lineStyleKeywords)
         
-    def plot_spectrum(self, setupNumber, name, index):
-        lambdaArray = self.data[1]["λ"]
-        intensityArray = self.newData[setupNumber][name][index]
+    def plot_spectrum(self, setupNumber, name, timeIndex):
+        # for i in range(max(self.newData[setupNumber][name].keys())):
+        lambdaArray = self.data[1]["λ"] # all lambda arrays are the same
+        intensityArray = self.newData[setupNumber][name][timeIndex]
         plt.scatter(lambdaArray, intensityArray, **self.lineStyleKeywords)
+        plt.xlabel(f"wavelength (nm)")
+        plt.ylabel(self.ylabel)
+        plt.xlim(LAMBDA_MIN, LAMBDA_MAX)
+        self.make_directory("../report-plots/spectra")
+        plt.savefig(f"../report-plots/spectra/{setupNumber}: {name}-{timeIndex}" + 
+                    f"bounds [{LAMBDA_MIN:.0f}, {LAMBDA_MAX:.0f}].png")
+        plt.clf()
+
+        
+    def plot_same_time_triplo_spectra(self, setupNumber, timeIndex):
+        lambdaArray = self.data[1]["λ"] # all lambda arrays are the same
+        for runName, label in self.triploNames[setupNumber]:
+            intensityArray = self.newData[setupNumber][runName][timeIndex]
+            plt.scatter(lambdaArray, intensityArray, **self.lineStyleKeywords,
+                        label=label)
+        plt.xlabel(f"wavelength (nm)")
+        plt.ylabel(self.ylabel)
         plt.xlim(587, 592)
-        plt.ylim(0, 4000)
-        plt.show()
+        plt.legend()
+        self.make_directory("../report-plots/spectra")
+        plt.savefig(f"../report-plots/spectra/{setupNumber}:{timeIndex}")
+        plt.clf()
+
+
+    
 
     def plot_sodium(self):  
         runNames = [("SoFlameWithSlit", "triplo 1"),
