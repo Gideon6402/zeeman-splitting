@@ -211,7 +211,6 @@ class DataProcessor:
                      label=label, **self.lineStyleKeywords)
         
     def plot_spectrum(self, setupNumber, name, timeIndex):
-        # for i in range(max(self.newData[setupNumber][name].keys())):
         lambdaArray = self.data[1]["λ"] # all lambda arrays are the same
         intensityArray = self.newData[setupNumber][name][timeIndex]
         plt.scatter(lambdaArray, intensityArray, **self.lineStyleKeywords)
