@@ -34,6 +34,9 @@ class DataProcessor:
             ("SoFlameWithSlitThree", "triplo 3")
         ]
 
+        self.triploNames[MERCURY] = ["fireWithSodium", "two", "third"]
+                                     
+
 
         # debug
         self.noSaltIntensties = None
@@ -216,10 +219,12 @@ class DataProcessor:
         plt.scatter(lambdaArray, intensityArray, **self.lineStyleKeywords)
         plt.xlabel(f"wavelength (nm)")
         plt.ylabel(self.ylabel)
+        # plt.xlim(LAMBDA_MIN, LAMBDA_MAX)
         plt.xlim(LAMBDA_MIN, LAMBDA_MAX)
+        # plt.ylim(0, 50)
         self.make_directory("../report-plots/spectra")
         plt.savefig(f"../report-plots/spectra/{setupNumber}: {name}-{timeIndex}" + 
-                    f"bounds [{LAMBDA_MIN:.0f}, {LAMBDA_MAX:.0f}].png")
+                    f"[{LAMBDA_MIN:.0f}, {LAMBDA_MAX:.0f}].png")
         plt.clf()
 
         
@@ -238,6 +243,24 @@ class DataProcessor:
         plt.clf()
 
 
+    def plot_background_spectrum(self):
+        lambdaArray = self.data[1]["λ"] # all lambda arrays are the same
+        intensities = self.get_intensities(self.newData[1]["background"][1])
+        plt.scatter(lambdaArray, intensities)
+        plt.xlabel("λ (nm)")
+        plt.ylabel("a.u. (related to count)")
+        plt.xlim(LAMBDA_MIN, LAMBDA_MAX)
+
+    def plot_mercury_spectra(self):
+        lambdaArray = self.data[1]["λ"] # all lambda arrays are the same
+        intensities1 = self.newData[MERCURY]["fireWithSodium"][1]
+        intensities2 = self.newData[MERCURY]["fireWithSodium"][5]
+        plt.scatter(lambdaArray, intensities1)
+        plt.scatter(lambdaArray, intensities2)
+        plt.xlabel("λ (nm)")
+        plt.ylabel("a.u. (related to count)")
+        plt.xlim(LAMBDA_MIN, LAMBDA_MAX)
+        plt.show()
     
 
     def plot_sodium(self):  

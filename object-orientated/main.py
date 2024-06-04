@@ -25,6 +25,8 @@ def main():
     processor.plot_same_time_triplo_spectra(SODIUM, 1)
     # plot 5th spectrum where the salt is blocking the light
     processor.plot_same_time_triplo_spectra(SODIUM, 5)
+
+    processor.plot_mercury_spectra()
     for i in range(10):
         processor.plot_spectrum(FIRE_ONLY, "fireOnly", i + 1)
 
