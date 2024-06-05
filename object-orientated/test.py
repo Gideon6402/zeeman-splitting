@@ -2,14 +2,10 @@
 
 from package import *
 
-processor = DataProcessor() 
+# processor = DataProcessor() 
 
-print(processor.newData[1]["background"][1])
-
-
-
-# lambdaArray = processor.data[1]["λ"]
-# print(lambdaArray[0])
-# plt.scatter(range(len(lambdaArray)), lambdaArray)
-# plt.show()
-
+my_list = np.concatenate((
+    np.array([1, 2])[1:],
+    np.array([2, 3])[1:]
+))
+print(my_list)

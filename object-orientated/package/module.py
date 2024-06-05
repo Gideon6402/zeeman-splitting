@@ -37,10 +37,18 @@ class DataProcessor:
         self.triploNames[SODIUM] =  [
             "SoFlameWithSlit",
             "SoFlameWithSlitTwo",
-            "SoFlameWithSlitThree", 
+            "SoFlameWithSlitThree"
         ]
-
-        self.triploNames[MERCURY] = ["fireWithSodium", "two", "third"]
+        self.triploNames[SODIUM_MAGNET] = [
+            "One",
+            "Two", 
+            "Three"
+        ]
+        self.triploNames[MERCURY] = [
+            "fireWithSodium",
+            "two", 
+            "third"
+        ]
                                      
         # debug
         self.noSaltIntensties = None
