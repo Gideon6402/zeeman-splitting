@@ -2,9 +2,7 @@
 
 from package import *
 
-processor = DataProcessor()
-processor.read_data()
-processor.separate_runs()  
+processor = DataProcessor() 
 
 print(processor.newData[1]["background"][1])
 

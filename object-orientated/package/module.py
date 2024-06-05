@@ -1,6 +1,12 @@
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import numpy as np
 import os
+
+# formatter to put scientific notation on y-axis
+formatter = ticker.ScalarFormatter(useMathText=True)
+formatter.set_scientific(True)
+formatter.set_powerlimits((0, 0))  # Set the limits for using scientific notation
 
 ## contstants
 LAMBDA_MIN = 360.127 # minimal wavelength
@@ -13,7 +19,7 @@ MERCURY = 9
 ## Printing options
 PROGRES = 1
 IGNORE = 2
-debugList = [IGNORE]
+debugList = []
 
 class DataProcessor:
     def __init__(self):
@@ -29,17 +35,28 @@ class DataProcessor:
         
         self.triploNames = {}
         self.triploNames[SODIUM] =  [
-            ("SoFlameWithSlit", "triplo 1"),
-            ("SoFlameWithSlitTwo", "triplo 2"),
-            ("SoFlameWithSlitThree", "triplo 3")
+            "SoFlameWithSlit",
+            "SoFlameWithSlitTwo",
+            "SoFlameWithSlitThree", 
         ]
 
         self.triploNames[MERCURY] = ["fireWithSodium", "two", "third"]
                                      
-
-
         # debug
         self.noSaltIntensties = None
+
+        # structure: data[setup number][column name][frequency index]
+        # e.g. data[1]["background-1"][1] would be the value of the lowest frequency
+        # of the first background measurement that is stored in 1.lab #
+        self.read_data()
+        # due to the nature of the data, there is no distinction between e.g.
+        # firstRun-1 and secondRun-2. This function bundels all spectra with the 
+        # same name into a dictionary: firstRun-1 and firsRun-2 etc go into
+        # newData[setupNumber]["firstRun"] and secondRun-1 and secondRun-2 etc go 
+        # into newData[setupNumber]["secondRun"]
+        self.separate_runs()
+
+        self.get_backgrounds()
 
     @staticmethod
     def print_dbg(identifier, *args, **kwargs):
@@ -120,7 +137,7 @@ class DataProcessor:
             self.create_duploName_dictionaries(setupNumber)
             self.fill_duploName_dictionaries(setupNumber)
 
-
+ 
 
     ## utility funcitons
     @staticmethod
@@ -131,7 +148,8 @@ class DataProcessor:
     def print_duploNames(self):
         for setupNumber in self.newData:
             for duploName in self.newData[setupNumber]:
-                print(f"{setupNumber}, {duploName}")
+                nrSpectra = len(self.newData[setupNumber][duploName].keys())
+                print(f"{setupNumber:>2}, {duploName:<32}: {nrSpectra:>2} runs")
 
     def print_columnNames(self):
         for setupNumber in self.data:
@@ -201,7 +219,9 @@ class DataProcessor:
         plt.ylim(bottom=0)
         plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
         plt.tight_layout()
-        plt.subplots_adjust(right=0.7) 
+        plt.subplots_adjust(right=0.75, top=0.95)
+        axes = plt.gca() 
+        axes.yaxis.set_major_formatter(formatter)
 
     def plot(self, intensities, label):
         """ Plot intensity vs time.
@@ -230,10 +250,10 @@ class DataProcessor:
         
     def plot_same_time_triplo_spectra(self, setupNumber, timeIndex):
         lambdaArray = self.data[1]["λ"] # all lambda arrays are the same
-        for runName, label in self.triploNames[setupNumber]:
+        for runNumber, runName in enumerate(self.triploNames[setupNumber]):
             intensityArray = self.newData[setupNumber][runName][timeIndex]
             plt.scatter(lambdaArray, intensityArray, **self.lineStyleKeywords,
-                        label=label)
+                        label=f"triplo {runNumber}")
         plt.xlabel(f"wavelength (nm)")
         plt.ylabel(self.ylabel)
         plt.xlim(587, 592)
@@ -260,7 +280,6 @@ class DataProcessor:
         plt.xlabel("λ (nm)")
         plt.ylabel("a.u. (related to count)")
         plt.xlim(LAMBDA_MIN, LAMBDA_MAX)
-        plt.show()
     
 
     def plot_sodium(self):  
@@ -277,10 +296,10 @@ class DataProcessor:
         self.plot(fireWithSaltIntensities, "flame with salt")
         # self.plot(self.noSaltIntensties, "no salt (debug)")
         plt.axhline(self.sodiumLampAndFlameLight, label="sodium lamp and flame",
-                    color="purple")
-        plt.axhline(self.background, label="background", color="pink")
-        plt.axhline(self.fireLight, label="flame", color="grey")
-        plt.axhline(self.sodiumLight, label="lamp", color="brown")
+                    color="purple", linestyle='--')
+        plt.axhline(self.background, label="background", color="pink", linestyle='--')
+        plt.axhline(self.fireLight, label="flame", color="grey", linestyle='--')
+        plt.axhline(self.sodiumLight, label="lamp", color="brown", linestyle='--')
         
         self.fix_layout()
         self.make_directory("../report-plots")
@@ -300,10 +319,10 @@ class DataProcessor:
         self.plot(fireWithSaltIntensities, "flame with salt")
         
         plt.axhline(self.sodiumLampAndFlameLight, label="sodium lamp and flame",
-                    color="purple")
-        plt.axhline(self.background, label="background", color="pink")
-        plt.axhline(self.fireLight, label="flame", color="grey")
-        plt.axhline(self.sodiumLight, label="lamp", color="brown")
+                    color="purple", linestyle='--')
+        plt.axhline(self.background, label="background", color="pink", linestyle='--')
+        plt.axhline(self.fireLight, label="flame", color="grey", linestyle='--')
+        plt.axhline(self.sodiumLight, label="lamp", color="brown", linestyle='--')
         
         self.fix_layout()
         self.make_directory("../report-plots")
@@ -321,8 +340,8 @@ class DataProcessor:
         fireWithSaltIntensities = self.get_intensities(self.newData[11]["fireWithSodium"])
         self.plot(fireWithSaltIntensities, "fire with salt")
         
-        plt.axhline(self.background, label="background", color="pink")
-        plt.axhline(self.fireLight, label="flame", color="purple")
+        plt.axhline(self.background, label="background", color="pink", linestyle='--')
+        plt.axhline(self.fireLight, label="flame", color="purple", linestyle='--')
         
         self.fix_layout()
         self.make_directory("../report-plots")
@@ -376,7 +395,6 @@ class DataProcessor:
         plt.ylabel(f"intensity")
         DataProcessor.make_directory(f"../plots/intensities")
         plt.savefig(f"../plots/intensities/{label}.png")
-        plt.show()
         plt.clf() #clear figure
 
     def process_data(self):
