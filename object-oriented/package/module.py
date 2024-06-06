@@ -19,11 +19,17 @@ FIRE_ONLY = 2
 SODIUM = 5
 SODIUM_MAGNET = 6
 MERCURY = 9
+FIRE_SALT = 11
 
 ## printing options
 PROGRES = 1
 IGNORE = 2
 debugList = [PROGRES]
+
+# some stuff to get exponential on y axis
+formatter = ticker.ScalarFormatter(useMathText=True)
+formatter.set_scientific(True)
+formatter.set_powerlimits((0, 0))  # Set the limits for using scientific notation
 
 class DataProcessor:
     def __init__(self):
@@ -441,9 +447,8 @@ class DataProcessor:
     # create table:
 
     def create_table(self):
-        formatter = ticker.ScalarFormatter(useMathText=True)
-        formatter.set_scientific(True)
-        formatter.set_powerlimits((0, 0))  # Set the limits for using scientific notation
+        """ Create table of intensities of the different runs:
+        Na/Hg + salt/no salt + magnet/no magnet """
 
         for setupNr in [SODIUM, SODIUM_MAGNET, MERCURY]:
             self.means[setupNr] = {}
@@ -463,6 +468,13 @@ class DataProcessor:
         self.means[FIRE_ONLY] = intensities.mean()
         self.errors[FIRE_ONLY] = np.std(intensities, ddof=1)
 
+        # fire with salt
+        intensities = self.get_intensities(
+                          self.newData[FIRE_SALT]["fireWithSodium"]
+                      )
+        self.means[FIRE_SALT] = intensities.mean()
+        self.errors[FIRE_SALT] = np.std(intensities, ddof=1)
+
 
 
         for setupNr in [SODIUM, SODIUM_MAGNET, MERCURY]:
@@ -476,6 +488,7 @@ class DataProcessor:
                         self.newData[setupNr][self.triploNames[setupNr][2]]
                     )
             
+            # without salt
             intensities = np.array([triplo1[0], triplo2[0], triplo3[0]])
 
             mean = intensities.mean()
@@ -488,10 +501,15 @@ class DataProcessor:
             self.means[setupNr]["without-salt"] = mean
             self.errors[setupNr]["without-salt"] = error
 
-            # setupNr - with salt
+            # with salt
             intensities = np.concatenate((triplo1[1:], triplo2[1:], triplo3[1:]))
             mean = intensities.mean()
             error = np.std(intensities, ddof=1) # sample standard deviation
+
+            mean -= self.means[FIRE_SALT]
+            error = (error**2 + self.errors[FIRE_SALT]**2)**0.5
+
+
             self.means[setupNr]["with-salt"] = mean
             self.errors[setupNr]["with-salt"] = error
 
