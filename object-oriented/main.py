@@ -14,7 +14,7 @@ def main():
     # processor.plot_same_time_triplo_spectra(SODIUM, 5)
 
     # processor.plot_mercury_spectra()
-    # processor.plot_spectrum(FIRE_ONLY, "fireOnly", 5)
+    # processor.plot_spectrum(FIRE_ONLY, "fireOnly", 5).
 
 
 
