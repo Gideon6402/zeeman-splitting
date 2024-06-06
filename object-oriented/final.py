@@ -40,8 +40,7 @@ for setupNr in [SODIUM, SODIUM_MAGNET, MERCURY]:
     means[setupNr]["with-salt"] = mean
     errors[setupNr]["with-salt"] = error
 
-width1 = 10
-width2 = 5
+
 
 def print_table(array):
     for row in array:
