@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import os
+import time
 
 # formatter to put scientific notation on y-axis
 formatter = ticker.ScalarFormatter(useMathText=True)
@@ -11,15 +12,18 @@ formatter.set_powerlimits((0, 0))  # Set the limits for using scientific notatio
 ## contstants
 LAMBDA_MIN = 360.127 # minimal wavelength
 LAMBDA_MAX = 894.837 # maximal wavelength
+
+## set-up numbers
+BACKGROUND = 1
 FIRE_ONLY = 2
 SODIUM = 5
 SODIUM_MAGNET = 6
 MERCURY = 9
 
-## Printing options
+## printing options
 PROGRES = 1
 IGNORE = 2
-debugList = []
+debugList = [PROGRES]
 
 class DataProcessor:
     def __init__(self):
@@ -152,6 +156,7 @@ class DataProcessor:
     def make_directory(filename):
         if not os.path.isdir(filename):
             os.system(f"mkdir {filename}")
+            DataProcessor.print_dbg(PROGRES, f"mkdir {filename}")
 
     def print_duploNames(self):
         for setupNumber in self.newData:
@@ -193,7 +198,6 @@ class DataProcessor:
         self.noSaltIntensties = noSaltIntensities # debug
         averageIntensity = sum(noSaltIntensities) / len(noSaltIntensities)
         return averageIntensity    
-            
                     
     ## plotting the data     
     @staticmethod
@@ -243,16 +247,21 @@ class DataProcessor:
         
     def plot_spectrum(self, setupNumber, name, timeIndex):
         lambdaArray = self.data[1]["λ"] # all lambda arrays are the same
+        self.newData[setupNumber]
+        self.newData[setupNumber][name]
+        self.newData[setupNumber][name][timeIndex]
         intensityArray = self.newData[setupNumber][name][timeIndex]
         plt.scatter(lambdaArray, intensityArray, **self.lineStyleKeywords)
         plt.xlabel(f"wavelength (nm)")
         plt.ylabel(self.ylabel)
         # plt.xlim(LAMBDA_MIN, LAMBDA_MAX)
-        plt.xlim(LAMBDA_MIN, LAMBDA_MAX)
-        # plt.ylim(0, 50)
-        self.make_directory("../report-plots/spectra")
-        plt.savefig(f"../report-plots/spectra/{setupNumber}: {name}-{timeIndex}" + 
-                    f"[{LAMBDA_MIN:.0f}, {LAMBDA_MAX:.0f}].png")
+        xlim = (588.5, 591.5)
+        plt.xlim(*xlim)
+        plt.ylim(0, 8000)
+        self.make_directory(f"../report-plots/focussed-spectra/")
+        self.make_directory(f"../report-plots/focussed-spectra/{setupNumber}-{name}/")
+        plt.savefig(        f"../report-plots/focussed-spectra/{setupNumber}-{name}/{timeIndex}") 
+                    # f"with bounds: {xlim}.png")
         plt.clf()
 
         
@@ -267,6 +276,7 @@ class DataProcessor:
         plt.xlim(587, 592)
         plt.legend()
         self.make_directory("../report-plots/spectra")
+        self.print_dbg(PROGRES, f"saving /spectra/{setupNumber}:{timeIndex}")
         plt.savefig(f"../report-plots/spectra/{setupNumber}:{timeIndex}")
         plt.clf()
 
