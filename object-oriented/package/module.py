@@ -445,8 +445,6 @@ class DataProcessor:
         formatter.set_scientific(True)
         formatter.set_powerlimits((0, 0))  # Set the limits for using scientific notation
 
-        self = DataProcessor() # selfect
-
         for setupNr in [SODIUM, SODIUM_MAGNET, MERCURY]:
             self.means[setupNr] = {}
             self.errors[setupNr] = {}
