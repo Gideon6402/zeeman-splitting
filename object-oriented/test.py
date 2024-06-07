@@ -2,8 +2,7 @@
 
 from package import *
 
-# processor = DataProcessor() 
+obj = DataProcessor() 
 
-for i in range(10000):
-    array_ = np.array([1, 2])
-    x = array_.size
+for i in range(3):
+    print(obj.newData[SODIUM_MAGNET][obj.triploNames[SODIUM_MAGNET][i]][1].sum())

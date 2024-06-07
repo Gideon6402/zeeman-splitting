@@ -5,12 +5,18 @@ from package import *
 obj = DataProcessor()
 
 categories = [
-    "Na",
-    "Na + salt",
-    "Na + magnet",
-    "Na + magnet + salt",
-    "Hg",
-    "Hg + salt",
+    "Na_NM_NS",
+    "Na_NM_S", 
+    "Na_M_NS", 
+    "Na_M_S",  
+    "Hg_NM_NS",
+    "Hg_NM_S",  
+]
+
+categories = [
+    "Na-lamp",
+    "Na-lamp with magnet",
+    "Hg-lamp"
 ]
 
 values = [
@@ -36,8 +42,26 @@ errorKeyWords = {
     "capsize": 5,
 }
 
-plt.bar(categories, values, yerr=errors, ecolor="red", error_kw=errorKeyWords)
-plt.ylabel("a.u.")
-plt.xticks(rotation=45, ha="right")
+# plt.bar(categories, values, yerr=errors, ecolor="red", error_kw=errorKeyWords)
+# plt.ylabel(obj.ylabel)
+# plt.xticks(rotation=45, ha="right")
+# plt.tight_layout()
+# plt.savefig("../report-plots/histogram")
+
+fig, axes = plt.subplots()
+
+positions = np.arange(3)
+barWidth = 0.35
+plt.bar(positions - barWidth/2, values[0::2], barWidth, label="without salt",
+        yerr=errors[0::2], error_kw=errorKeyWords)
+plt.bar(positions + barWidth/2, values[1::2], barWidth, label="with-salt",
+        yerr=errors[1::2], error_kw=errorKeyWords)
+plt.legend()
+plt.ylabel("count (a.u.)")
 plt.tight_layout()
-plt.savefig("../report-plots/histogram")
+
+ax = plt.gca()
+ax.set_xticks(positions)
+ax.set_xticklabels(categories)
+plt.savefig("../report-plots/bar-graph")
+plt.show()

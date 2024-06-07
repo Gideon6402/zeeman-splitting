@@ -41,7 +41,7 @@ class DataProcessor:
         self.sodiumLampAndFlameLight = None
         self.lineStyleKeywords = {"linestyle": "", "marker": '.',
                                    "linewidth": 0.5}
-        self.ylabel = "a.u. (related to count)"
+        self.ylabel = "count (a.u.)"
         
         self.triploNames = {}
         self.triploNames[SODIUM] =  [
@@ -546,13 +546,13 @@ class DataProcessor:
                 print()
 
 
-        print_table([["",                  "mean",                                    "error"                                   ],
-                    ["Na",                 self.means[SODIUM]["without-salt"],        self.errors[SODIUM]["without-salt"]       ],
-                    ["Na + salt",          self.means[SODIUM]["with-salt"],           self.errors[SODIUM]["with-salt"]          ],
-                    ["Na + magnet",        self.means[SODIUM_MAGNET]["without-salt"], self.errors[SODIUM_MAGNET]["without-salt"]],
-                    ["Na + magnet + salt", self.means[SODIUM_MAGNET]["with-salt"],    self.errors[SODIUM_MAGNET]["with-salt"]   ],
-                    ["Hg",                 self.means[MERCURY]["without-salt"],       self.errors[MERCURY]["without-salt"]      ],
-                    ["Hg + salt",          self.means[MERCURY]["with-salt"],          self.errors[MERCURY]["with-salt"]         ]]
+        print_table([["",           "mean",                                     "error"                                   ],
+                    ["Na_NM_NS",    self.means[SODIUM]["without-salt"],         self.errors[SODIUM]["without-salt"]       ],
+                    ["Na_NM_S",     self.means[SODIUM]["with-salt"],            self.errors[SODIUM]["with-salt"]          ],
+                    ["Na_M_NS",     self.means[SODIUM_MAGNET]["without-salt"],  self.errors[SODIUM_MAGNET]["without-salt"]],
+                    ["Na_M_S",      self.means[SODIUM_MAGNET]["with-salt"],     self.errors[SODIUM_MAGNET]["with-salt"]   ],
+                    ["Hg_NM_NS",    self.means[MERCURY]["without-salt"],        self.errors[MERCURY]["without-salt"]      ],
+                    ["Hg_M_S",      self.means[MERCURY]["with-salt"],           self.errors[MERCURY]["with-salt"]         ]]
     )
 
 
