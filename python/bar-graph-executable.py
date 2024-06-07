@@ -2,7 +2,7 @@
 
 ### Saves the bar graph at report-plots/bar-graph.png ###
 
-from dataprocessor import *
+from dataprocessor import * # package that I created
 
 obj = DataProcessor()
 

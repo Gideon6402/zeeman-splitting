@@ -14,3 +14,4 @@ for setupNr in obj.newData:
     for name in obj.newData[setupNr]:
         for number in obj.newData[setupNr][name]:
             obj.plot_spectrum(setupNr, name, number)
+
