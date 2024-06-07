@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import os
+imporscipy.constants as const
 import time
 
 # formatter to put scientific notation on y-axis
@@ -213,6 +214,10 @@ class DataProcessor:
     ## plotting the data     
     @staticmethod
     def get_intensities(spectraDictionary):
+        lambdaArray = self.data[1]["λ"] # all lambda arrays are the same
+        def count_to_energy(lambdaArray, countArray):
+            return 
+
         intensities = np.zeros(max(spectraDictionary.keys()))
         for spectrumNumber in spectraDictionary: 
             index = int(spectrumNumber) - 1 #
