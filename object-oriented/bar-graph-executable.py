@@ -37,6 +37,7 @@ errorKeyWords = {
 }
 
 plt.bar(categories, values, yerr=errors, ecolor="red", error_kw=errorKeyWords)
+plt.ylabel("a.u.")
 plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
 plt.savefig("../report-plots/histogram")

@@ -79,7 +79,7 @@ class DataProcessor:
         # into newData[setupNumber]["secondRun"]
         self.separate_runs()
         self.get_backgrounds()
-        self.create_table()
+        self.calculate_results()
 
     @staticmethod
     def print_dbg(identifier, *args, **kwargs):
@@ -446,9 +446,16 @@ class DataProcessor:
 
     # create table:
 
-    def create_table(self):
+    def calculate_results(self):
         """ Create table of intensities of the different runs:
         Na/Hg + salt/no salt + magnet/no magnet """
+
+        def get_error(intensities):
+            """ Local function to get the standard error in the mean """
+            error = (np.std(intensities, ddof=1)
+                     / (intensities.size)**0.5
+            )
+            return error
 
         for setupNr in [SODIUM, SODIUM_MAGNET, MERCURY]:
             self.means[setupNr] = {}
@@ -458,58 +465,65 @@ class DataProcessor:
         intensities = self.get_intensities(
             self.newData[BACKGROUND]["background"]
         )
+
         self.means[BACKGROUND] = intensities.mean()
-        self.errors[BACKGROUND] = np.std(intensities, ddof=1)
+        self.errors[BACKGROUND] = get_error(intensities)
 
         # fire
         intensities = self.get_intensities(
                         self.newData[FIRE_ONLY]["fireOnly"]
                     )
+        
         self.means[FIRE_ONLY] = intensities.mean()
-        self.errors[FIRE_ONLY] = np.std(intensities, ddof=1)
+        self.errors[FIRE_ONLY] = get_error(intensities)
 
         # fire with salt
         intensities = self.get_intensities(
                           self.newData[FIRE_SALT]["fireWithSodium"]
                       )
+        
         self.means[FIRE_SALT] = intensities.mean()
-        self.errors[FIRE_SALT] = np.std(intensities, ddof=1)
+        self.errors[FIRE_SALT] = get_error(intensities)
 
-
-
+        # sodium lamp, sodium lamp with magnet and mercury lamp
         for setupNr in [SODIUM, SODIUM_MAGNET, MERCURY]:
             triplo1 = self.get_intensities(
                         self.newData[setupNr][self.triploNames[setupNr][0]]
-                    )
+                      )
             triplo2 = self.get_intensities(
                         self.newData[setupNr][self.triploNames[setupNr][1]]
-                    )
+                      )
             triplo3 = self.get_intensities(
                         self.newData[setupNr][self.triploNames[setupNr][2]]
-                    )
+                      )
             
-            # without salt
+            ## without salt
             intensities = np.array([triplo1[0], triplo2[0], triplo3[0]])
 
             mean = intensities.mean()
-            error = np.std(intensities, ddof=1) # sample standard deviation
+            error = get_error(intensities)
 
             # substract background
             mean -= self.means[FIRE_ONLY]
+            # add error of background
             error = (error**2 + self.errors[FIRE_ONLY]**2)**0.5
 
+            # save
             self.means[setupNr]["without-salt"] = mean
             self.errors[setupNr]["without-salt"] = error
 
-            # with salt
+            ## with salt
             intensities = np.concatenate((triplo1[1:], triplo2[1:], triplo3[1:]))
-            mean = intensities.mean()
-            error = np.std(intensities, ddof=1) # sample standard deviation
 
+            mean = intensities.mean()
+            error = get_error(intensities)
+
+            # subtract background
             mean -= self.means[FIRE_SALT]
+            # add error of background
             error = (error**2 + self.errors[FIRE_SALT]**2)**0.5
 
-
+            # save
             self.means[setupNr]["with-salt"] = mean
             self.errors[setupNr]["with-salt"] = error
 
@@ -532,7 +546,7 @@ class DataProcessor:
                 print()
 
 
-        print_table([["",                   "mean",                               "error"                              ],
+        print_table([["",                  "mean",                                    "error"                                   ],
                     ["Na",                 self.means[SODIUM]["without-salt"],        self.errors[SODIUM]["without-salt"]       ],
                     ["Na + salt",          self.means[SODIUM]["with-salt"],           self.errors[SODIUM]["with-salt"]          ],
                     ["Na + magnet",        self.means[SODIUM_MAGNET]["without-salt"], self.errors[SODIUM_MAGNET]["without-salt"]],

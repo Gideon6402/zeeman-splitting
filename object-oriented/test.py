@@ -4,8 +4,6 @@ from package import *
 
 # processor = DataProcessor() 
 
-my_list = np.concatenate((
-    np.array([1, 2])[1:],
-    np.array([2, 3])[1:]
-))
-print(my_list)
+for i in range(10000):
+    array_ = np.array([1, 2])
+    x = array_.size
