@@ -1,6 +1,8 @@
 #!/bin/python3
 
-from package import *
+### Saves all spectra in report-plots/spectra ###
+
+from dataprocessor import *
 
 obj = DataProcessor()
 

@@ -1,17 +1,10 @@
 #!/bin/python3
 
-from package import *
+### Saves the bar graph at report-plots/bar-graph.png ###
+
+from dataprocessor import *
 
 obj = DataProcessor()
-
-categories = [
-    "Na_NM_NS",
-    "Na_NM_S", 
-    "Na_M_NS", 
-    "Na_M_S",  
-    "Hg_NM_NS",
-    "Hg_NM_S",  
-]
 
 categories = [
     "Na-lamp",
