@@ -4,6 +4,8 @@ import numpy as np
 import os
 import time
 
+from .utils import get_variable_name
+
 # formatter to put scientific notation on y-axis
 formatter = ticker.ScalarFormatter(useMathText=True)
 formatter.set_scientific(True)
@@ -24,7 +26,7 @@ FIRE_SALT = 11
 ## printing options
 PROGRES = 1
 IGNORE = 2
-debugList = [PROGRES]
+debugList = [IGNORE]
 
 # some stuff to get exponential on y axis
 formatter = ticker.ScalarFormatter(useMathText=True)
@@ -176,8 +178,8 @@ class DataProcessor:
                 print(f"{setupNumber:>2}, {duploName:<32}: {nrSpectra:>2} runs")
 
     def print_columnNames(self):
-        for setupNumber in self.data:
-            for columnName in self.data[setupNumber]:
+        for setupNumber in self.newData:
+            for columnName in self.newData[setupNumber]:
                 print(f"{setupNumber}, {columnName}")
 
     @staticmethod
@@ -253,8 +255,14 @@ class DataProcessor:
         intensityError = 1e4
         timeArray = 4 * np.arange(len(intensities)) # measurement every 4 seconds
         timeError = 1
+        print(len(timeArray), len(intensities))
         plt.errorbar(timeArray, intensities, intensityError, timeError,
                      label=label, **self.lineStyleKeywords)
+        self.make_directory(f"../plots")
+        self.make_directory(f"../plots/intensities")
+        plt.savefig(f"../plots/intensities/{label}.png")
+        plt.clf()
+
         
     def plot_spectrum(self, setupNumber, name, timeIndex):
         lambdaArray = self.data[1]["λ"] # all lambda arrays are the same
@@ -417,11 +425,11 @@ class DataProcessor:
         
         intensities = DataProcessor.get_intensities(spectraDictionary)
         
-        plt.plot(intensities, linestyle='-',
-                marker = 'x', linewidth=0.5)
+        plt.scatter(intensities)
         plt.title(f"Intensity vs run")
         plt.xlabel(f"run number")
         plt.ylabel(f"intensity")
+        DataProcessor.make_directory(f"../plots")
         DataProcessor.make_directory(f"../plots/intensities")
         plt.savefig(f"../plots/intensities/{label}.png")
         plt.clf() #clear figure
@@ -546,15 +554,48 @@ class DataProcessor:
                 print()
 
 
-        print_table([["",           "mean",                                     "error"                                   ],
-                    ["Na_NM_NS",    self.means[SODIUM]["without-salt"],         self.errors[SODIUM]["without-salt"]       ],
-                    ["Na_NM_S",     self.means[SODIUM]["with-salt"],            self.errors[SODIUM]["with-salt"]          ],
-                    ["Na_M_NS",     self.means[SODIUM_MAGNET]["without-salt"],  self.errors[SODIUM_MAGNET]["without-salt"]],
-                    ["Na_M_S",      self.means[SODIUM_MAGNET]["with-salt"],     self.errors[SODIUM_MAGNET]["with-salt"]   ],
-                    ["Hg_NM_NS",    self.means[MERCURY]["without-salt"],        self.errors[MERCURY]["without-salt"]      ],
-                    ["Hg_M_S",      self.means[MERCURY]["with-salt"],           self.errors[MERCURY]["with-salt"]         ]]
-    )
+        print_table([["lamp",   "salt", "magnet", "mean",                                     "error"                                   ],
+                     ["Na",     "",     "",        self.means[SODIUM]["without-salt"],         self.errors[SODIUM]["without-salt"]       ],
+                     ["Na",     "salt", "",        self.means[SODIUM]["with-salt"],            self.errors[SODIUM]["with-salt"]          ],
+                     ["Na",     "",     "magnet",  self.means[SODIUM_MAGNET]["without-salt"],  self.errors[SODIUM_MAGNET]["without-salt"]],
+                     ["Na",     "salt", "magnet",  self.means[SODIUM_MAGNET]["with-salt"],     self.errors[SODIUM_MAGNET]["with-salt"]   ],
+                     ["Hg",     "",     "",        self.means[MERCURY]["without-salt"],        self.errors[MERCURY]["without-salt"]      ],
+                     ["Hg",     "salt", "",        self.means[MERCURY]["with-salt"],           self.errors[MERCURY]["with-salt"]         ]]
+        )
 
+    def show_ratios(self):
+        def print_ratios(setupNr, name):
+            withSalt = self.means[setupNr]['with-salt']
+            withoutSalt = self.means[setupNr]['without-salt']
+            withSaltError = self.errors[setupNr]["with-salt"]
+            withoutSaltError = self.errors[setupNr]["without-salt"]
+
+            ratio = withSalt / withoutSalt
+            error = np.sqrt(withSaltError**2 + withoutSaltError**2)
+
+            print(f"{name}: {ratio} pm {error}")
+
+        print(f"Sodium lamp ratio {self.means[SODIUM]['without-salt']/self.means[SODIUM]['with-salt']:.2f}")
+        print(f"Sodium lamp with magnet ratio {self.means[SODIUM_MAGNET]['without-salt']/self.means[SODIUM_MAGNET]['with-salt']:.2f}")
+        print(f"Sodium lamp with magnet ratio {self.means[MERCURY]['without-salt']/self.means[MERCURY]['with-salt']:.2f}")
+        
+        
+
+        
+    def show_all_intensities(self):
+        for setupNr in self.newData:
+            for runNr, name in enumerate(self.newData[setupNr]):
+                intensities = self.get_intensities(self.newData[setupNr][name])
+                timeArray = 4 * np.arange(len(intensities))
+                plt.scatter(timeArray, intensities,
+                            marker='.',
+                            label=name)
+            plt.ylim(bottom=0)
+            plt.legend()
+            plt.savefig(f"../plots/intensities/{setupNr}.png")
+            plt.clf()   
+
+    
 
             
         
